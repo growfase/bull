@@ -272,6 +272,17 @@ img { max-width: 100%; display: block; }
 .sprite { width: 100%; height: 100%; }
 .sprite svg { width: 100%; height: 100%; display: block; }
 .sprite img { width: 100%; height: 100%; object-fit: contain; }
+.block-arms .sprite img { object-position: center bottom; }
+
+/* Cabeça do touro (PNG por estado, sobre o corpo SVG) */
+.opp-head {
+  position: absolute; top: -7%; left: 50%;
+  transform: translateX(-50%);
+  width: 100%; height: 66%;
+  object-fit: contain;
+  pointer-events: none;
+  filter: drop-shadow(0 0 26px rgba(143,224,143,.3));
+}
 
 /* ---------- Oponente ---------- */
 .opponent {
@@ -283,6 +294,7 @@ img { max-width: 100%; display: block; }
   will-change: transform;
   z-index: 3;
 }
+.opponent.enraged       { filter: drop-shadow(0 0 22px rgba(255,80,80,.55)); }
 .opponent.state-idle    { animation: opp-sway 2.6s ease-in-out infinite; }
 .opponent.state-hitL    { transform: translateX(-58%) rotate(-9deg) scale(.98); filter: brightness(1.6); }
 .opponent.state-hitR    { transform: translateX(-42%) rotate(9deg) scale(.98); filter: brightness(1.6); }
@@ -339,14 +351,17 @@ img { max-width: 100%; display: block; }
 
 /* ---------- Punhos do jogador ---------- */
 .fist {
-  position: absolute; bottom: -6%;
-  width: 26%; aspect-ratio: 1 / 1.15;
+  position: absolute; bottom: -7%;
+  width: 24%; aspect-ratio: 2 / 3;
   z-index: 7; pointer-events: none;
-  transition: transform .1s;
-  filter: drop-shadow(0 0 12px rgba(143,224,143,.2)) drop-shadow(0 8px 16px rgba(0,0,0,.5));
+  transition: transform .1s, opacity .12s;
+  filter: drop-shadow(0 0 12px rgba(143,224,143,.18)) drop-shadow(0 8px 16px rgba(0,0,0,.5));
 }
-.fist-l { left: 16%; transform: rotate(-6deg); }
-.fist-r { right: 16%; transform: rotate(6deg) scaleX(-1); }
+.fist img { object-position: center bottom; }
+.fist-l { left: 14%; transform: rotate(-6deg); }
+.fist-r { right: 14%; transform: rotate(6deg) scaleX(-1); }
+/* durante a defesa, os punhos somem — só os braços de bloqueio ficam */
+.stage.blocking .fist { opacity: 0; }
 .fist-l.punching { animation: punch-l .26s ease-out; }
 .fist-r.punching { animation: punch-r .26s ease-out; }
 @keyframes punch-l {
@@ -362,7 +377,8 @@ img { max-width: 100%; display: block; }
 
 /* ---------- Braços de defesa ---------- */
 .block-arms {
-  position: absolute; inset: 0; z-index: 9; pointer-events: none;
+  position: absolute; left: 0; right: 0; bottom: 0; height: 72%;
+  z-index: 9; pointer-events: none;
   animation: arms-up .14s ease-out;
 }
 @keyframes arms-up {
@@ -498,6 +514,64 @@ img { max-width: 100%; display: block; }
 }
 #endTitle.win  { color: var(--glow); text-shadow: 0 0 28px var(--glow-soft), 0 0 80px rgba(143,224,143,.5); }
 #endTitle.lose { color: var(--red); text-shadow: 0 0 28px rgba(255,89,100,.4); }
+
+/* ---------- Registro de score (tela final) ---------- */
+.register-box {
+  margin: 0 auto 22px; max-width: 340px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.name-input {
+  background: var(--panel2); color: var(--text);
+  border: 1px solid var(--line); border-radius: 999px;
+  padding: 12px 20px; font-family: var(--font-body);
+  font-size: .95rem; text-align: center; outline: none;
+  transition: border-color .2s;
+}
+.name-input:focus { border-color: rgba(185,220,174,.45); }
+.name-input::placeholder { color: var(--muted); }
+.btn-wallet {
+  background: linear-gradient(135deg, #ab9ff2, #7b6ff0);
+  color: #17123a;
+  box-shadow: 0 0 26px rgba(123,111,240,.4), inset 0 1px 0 rgba(255,255,255,.35);
+}
+.btn-wallet:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 0 40px rgba(123,111,240,.6), inset 0 1px 0 rgba(255,255,255,.35);
+}
+.btn-wallet:disabled { opacity: .55; cursor: not-allowed; }
+.reg-status { min-height: 1.2em; font-size: .85rem; color: var(--muted); margin: 0 !important; }
+.reg-status.ok  { color: var(--glow); }
+.reg-status.err { color: var(--red); }
+
+/* ---------- Ranking ---------- */
+.rank-section { padding: 80px 0 40px; }
+.rank-sub {
+  text-align: center; color: var(--muted); max-width: 520px;
+  margin: -14px auto 34px; line-height: 1.6;
+}
+.rank-sub b { color: var(--glow); }
+.rank-board {
+  max-width: 680px; margin: 0 auto;
+  background: var(--panel); border: 1px solid var(--line);
+  border-radius: 22px; padding: 12px 22px;
+  box-shadow: 0 0 60px rgba(143,224,143,.07);
+  overflow: hidden;
+}
+.rank-table { width: 100%; border-collapse: collapse; }
+.rank-table th {
+  text-align: left; font-size: .72rem; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--muted);
+  padding: 14px 10px 10px; border-bottom: 1px solid var(--line);
+}
+.rank-table td { padding: 13px 10px; border-bottom: 1px solid rgba(185,220,174,.06); }
+.rank-table tr:last-child td { border-bottom: none; }
+.rank-pos { width: 46px; font-size: 1.05rem; }
+.rank-top td { background: rgba(143,224,143,.04); }
+.rank-wallet { color: var(--muted); font-size: .85rem; font-family: monospace; }
+.rank-score { font-weight: 800; color: var(--glow); text-shadow: 0 0 12px var(--glow-soft); }
+.ta-r { text-align: right; }
+.rank-empty { text-align: center; color: var(--muted); padding: 30px 10px !important; }
+.rank-note { text-align: center; color: var(--muted); font-size: .82rem; margin-top: 16px; }
 
 /* ---------- Responsivo ---------- */
 @media (max-width: 640px) {

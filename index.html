@@ -18,6 +18,7 @@
       <a class="logo" href="#top"><svg class="logo-horns" viewBox="0 0 60 26" aria-hidden="true"><path d="M4 2 Q2 16 16 22 Q10 14 12 6 Q16 12 22 14 Q14 8 14 2 Z" fill="currentColor"/><path d="M56 2 Q58 16 44 22 Q50 14 48 6 Q44 12 38 14 Q46 8 46 2 Z" fill="currentColor"/></svg><span>BULLFUN</span></a>
       <nav class="nav">
         <a href="#jogo">Play</a>
+        <a href="#ranking">Ranking</a>
         <a href="#como-jogar">How to play</a>
         <a href="#sobre">About</a>
       </nav>
@@ -135,6 +136,11 @@
               <h3 id="endTitle">KNOCKOUT!</h3>
               <p id="endMsg">You cleared the alley.</p>
               <p class="end-score">SCORE: <b id="endScore">0</b></p>
+              <div class="register-box">
+                <input id="playerName" class="name-input" type="text" maxlength="20" placeholder="Your name (optional)">
+                <button class="btn btn-wallet" id="btnRegister">🏆 Register score · 0.1 SOL</button>
+                <p class="reg-status" id="regStatus"></p>
+              </div>
               <button class="btn btn-primary" id="btnRestart">Fight again</button>
             </div>
           </div>
@@ -142,6 +148,26 @@
         </div>
       </div>
       <p class="stage-hint">💡 Tip: fast punches fill the score, but keep an eye on the red fist.</p>
+    </div>
+  </section>
+
+  <!-- ===================== RANKING ===================== -->
+  <section class="rank-section" id="ranking">
+    <div class="container">
+      <h2 class="section-title">Ranking</h2>
+      <p class="rank-sub">The toughest fists in the alley. Register your score for
+        <b>0.1 SOL</b> with your Solana wallet and claim your spot.</p>
+      <div class="rank-board">
+        <table class="rank-table">
+          <thead>
+            <tr><th>#</th><th>Fighter</th><th>Wallet</th><th class="ta-r">Score</th></tr>
+          </thead>
+          <tbody id="rankBody">
+            <tr><td colspan="4" class="rank-empty">Loading ranking…</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="rank-note">Payments are verified on-chain. Each transaction registers one score.</p>
     </div>
   </section>
 
@@ -186,6 +212,8 @@
     </div>
   </footer>
 
+  <script src="https://unpkg.com/@solana/web3.js@1.98.0/lib/index.iife.min.js"></script>
   <script src="js/game.js"></script>
+  <script src="js/ranking.js"></script>
 </body>
 </html>

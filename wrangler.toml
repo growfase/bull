@@ -1,0 +1,13 @@
+name = "bull"
+compatibility_date = "2026-07-01"
+pages_build_output_dir = "."
+
+[[kv_namespaces]]
+binding = "SCORES"
+id = "78d31f3b184e452d9086a6b2d7decdfb"
+
+[vars]
+# TODO: set your treasury wallet address to receive the 0.1 SOL registrations
+RECIPIENT_WALLET = ""
+PRICE_SOL = "0.1"
+SOLANA_RPC = "https://api.mainnet-beta.solana.com"
