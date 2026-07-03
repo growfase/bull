@@ -276,10 +276,11 @@ img { max-width: 100%; display: block; }
 
 /* Cabeça do touro (PNG por estado, sobre o corpo SVG) */
 .opp-head {
-  position: absolute; top: -7%; left: 50%;
+  position: absolute; top: -5%; left: 50%;
   transform: translateX(-50%);
-  width: 100%; height: 66%;
+  width: 98%; height: 64%;
   object-fit: contain;
+  object-position: center bottom;
   pointer-events: none;
   filter: drop-shadow(0 0 26px rgba(143,224,143,.3));
 }
@@ -294,7 +295,7 @@ img { max-width: 100%; display: block; }
   will-change: transform;
   z-index: 3;
 }
-.opponent.enraged       { filter: drop-shadow(0 0 22px rgba(255,80,80,.55)); }
+.opponent.enraged       { filter: drop-shadow(0 0 18px rgba(255,50,50,.85)) drop-shadow(0 0 46px rgba(255,50,50,.5)); }
 .opponent.state-idle    { animation: opp-sway 2.6s ease-in-out infinite; }
 .opponent.state-hitL    { transform: translateX(-58%) rotate(-9deg) scale(.98); filter: brightness(1.6); }
 .opponent.state-hitR    { transform: translateX(-42%) rotate(9deg) scale(.98); filter: brightness(1.6); }
@@ -332,6 +333,20 @@ img { max-width: 100%; display: block; }
   70%  { transform: translate(-50%, -46%) scale(2.6) rotate(8deg); opacity: 1; }
   100% { transform: translate(-50%, -40%) scale(3.4) rotate(10deg); opacity: 0; }
 }
+/* super poder: punho gigante + tela pulsando em vermelho */
+.enemy-fist.super { width: 28%; filter: drop-shadow(0 0 34px rgba(255,40,40,.9)) drop-shadow(0 10px 20px rgba(0,0,0,.5)); }
+.enemy-fist.super.flying { animation: fist-super .5s cubic-bezier(.3,.1,.7,1) forwards; }
+@keyframes fist-super {
+  0%   { transform: translate(-50%, -50%) scale(.3) rotate(-30deg); opacity: 1; }
+  65%  { transform: translate(-50%, -44%) scale(3.4) rotate(10deg); opacity: 1; }
+  100% { transform: translate(-50%, -38%) scale(5) rotate(14deg); opacity: 0; }
+}
+.stage.super-charge::after {
+  content: ''; position: absolute; inset: 0; z-index: 8; pointer-events: none;
+  background: radial-gradient(circle, transparent 22%, rgba(255,30,30,.55) 100%);
+  animation: super-pulse .22s ease-in-out infinite alternate;
+}
+@keyframes super-pulse { from { opacity: .2; } to { opacity: .85; } }
 
 /* ---------- Flash de dano / tela ---------- */
 .hit-flash {
@@ -351,8 +366,8 @@ img { max-width: 100%; display: block; }
 
 /* ---------- Punhos do jogador ---------- */
 .fist {
-  position: absolute; bottom: -7%;
-  width: 24%; aspect-ratio: 2 / 3;
+  position: absolute; bottom: -6%;
+  width: 21%; aspect-ratio: 2 / 3;
   z-index: 7; pointer-events: none;
   transition: transform .1s, opacity .12s;
   filter: drop-shadow(0 0 12px rgba(143,224,143,.18)) drop-shadow(0 8px 16px rgba(0,0,0,.5));
@@ -377,7 +392,7 @@ img { max-width: 100%; display: block; }
 
 /* ---------- Braços de defesa ---------- */
 .block-arms {
-  position: absolute; left: 0; right: 0; bottom: 0; height: 72%;
+  position: absolute; left: 0; right: 0; bottom: 0; height: 64%;
   z-index: 9; pointer-events: none;
   animation: arms-up .14s ease-out;
 }
@@ -454,6 +469,13 @@ img { max-width: 100%; display: block; }
 .score small { font-size: .5em; color: var(--glow); letter-spacing: 2px; }
 .score.bump { animation: score-bump .25s; }
 @keyframes score-bump { 50% { transform: scale(1.25); color: var(--glow); } }
+.timer {
+  position: absolute; top: 3.5%; left: 3.5%;
+  font-weight: 800; letter-spacing: 1px;
+  font-size: clamp(.8rem, 2.6cqw, 1.3rem);
+  color: var(--glow);
+  text-shadow: 0 0 14px var(--glow-soft), 0 2px 0 #000;
+}
 
 /* ---------- FX (popups, partículas) ---------- */
 .fx-layer { position: absolute; inset: 0; z-index: 12; pointer-events: none; overflow: hidden; }
@@ -539,6 +561,7 @@ img { max-width: 100%; display: block; }
   box-shadow: 0 0 40px rgba(123,111,240,.6), inset 0 1px 0 rgba(255,255,255,.35);
 }
 .btn-wallet:disabled { opacity: .55; cursor: not-allowed; }
+.deposit-note { font-size: .78rem; color: var(--muted); margin: 0 !important; font-family: monospace; }
 .reg-status { min-height: 1.2em; font-size: .85rem; color: var(--muted); margin: 0 !important; }
 .reg-status.ok  { color: var(--glow); }
 .reg-status.err { color: var(--red); }

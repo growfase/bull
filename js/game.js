@@ -35,26 +35,32 @@ const CFG = {
   punchCooldown: 200,        // ms between punches
 
   // boss — base difficulty
-  attackMinDelay: 1700,      // ms between enemy attacks
-  attackMaxDelay: 3600,
-  windupTime: 550,           // ms of warning before the attack
-  attackTime: 480,           // ms the fist flies (block window)
-  dodgeChance: 0.18,         // chance the boss dodges a punch
+  attackMinDelay: 1500,      // ms between enemy attacks
+  attackMaxDelay: 3200,
+  windupTime: 500,           // ms of warning before the attack
+  attackTime: 460,           // ms the fist flies (block window)
+  dodgeChance: 0.2,          // chance the boss dodges a punch
 
-  // boss — enraged (below 40% HP)
-  enrageAt: 0.4,
-  enrageMinDelay: 1000,
-  enrageMaxDelay: 2300,
-  enrageWindup: 400,
-  enrageDodge: 0.26,
-  doubleAttackChance: 0.35,  // chance of an immediate follow-up attack
+  // boss — SUPER RAGE (below 30% HP): red glow, relentless
+  enrageAt: 0.3,
+  enrageMinDelay: 850,
+  enrageMaxDelay: 1900,
+  enrageWindup: 330,
+  enrageDodge: 0.3,
+  doubleAttackChance: 0.5,   // chance of an immediate follow-up attack
+
+  // boss — SUPER POWER (at 20% HP): unblocked = instant death
+  superAt: 0.2,
+  superChargeTime: 950,      // ms of warning to get the block up
+  superBonus: 1000,          // points for surviving it
 };
 
 /* ============================================================
    SVG PLACEHOLDERS (used when an ASSETS slot is null)
    ============================================================ */
 const SVGS = {
-  /* Headless bull body — the PNG head from HEADS sits on top. */
+  /* Headless muscular bull body — the PNG head from HEADS sits on the
+     neck/traps so face and body read as one figure. */
   opponentBody: `
   <svg viewBox="0 0 290 400" xmlns="http://www.w3.org/2000/svg">
     <defs>
@@ -63,25 +69,58 @@ const SVGS = {
         <stop offset="55%" stop-color="#8fe08f" stop-opacity=".12"/>
         <stop offset="100%" stop-color="#8fe08f" stop-opacity="0"/>
       </radialGradient>
+      <linearGradient id="oSkin" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#242724"/>
+        <stop offset="55%" stop-color="#191c19"/>
+        <stop offset="100%" stop-color="#0e100e"/>
+      </linearGradient>
+      <linearGradient id="oSkin2" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#1e211e"/>
+        <stop offset="100%" stop-color="#101310"/>
+      </linearGradient>
     </defs>
     <ellipse cx="145" cy="150" rx="135" ry="140" fill="url(#oGlow)"/>
-    <!-- legs -->
-    <rect x="100" y="304" width="36" height="82" rx="13" fill="#0c0e0c"/>
-    <rect x="156" y="304" width="36" height="82" rx="13" fill="#090b09"/>
-    <ellipse cx="117" cy="388" rx="29" ry="9" fill="#050605"/>
-    <ellipse cx="175" cy="388" rx="29" ry="9" fill="#050605"/>
-    <!-- torso (dark hoodie) -->
-    <path d="M72 244 Q62 330 98 324 L192 324 Q228 330 218 244 Q210 216 145 214 Q80 216 72 244 Z" fill="#111411"/>
-    <path d="M80 240 Q92 222 122 217" stroke="#8fe08f" stroke-width="2.5" fill="none" stroke-linecap="round" opacity=".35"/>
-    <path d="M210 240 Q198 222 168 217" stroke="#8fe08f" stroke-width="2.5" fill="none" stroke-linecap="round" opacity=".2"/>
-    <path d="M126 218 L136 250 L145 226 L154 250 L164 218" stroke="#0a0c0a" stroke-width="5" fill="none"/>
-    <!-- arms -->
-    <path d="M76 246 Q42 274 54 314 Q60 330 78 322 Q92 314 86 290 Z" fill="#0e110e"/>
-    <path d="M214 246 Q248 274 236 314 Q230 330 212 322 Q198 314 204 290 Z" fill="#0e110e"/>
-    <circle cx="66" cy="320" r="19" fill="#131613"/>
-    <circle cx="224" cy="320" r="19" fill="#131613"/>
-    <path d="M52 312 A19 19 0 0 0 66 339" stroke="#8fe08f" stroke-width="2" fill="none" opacity=".3"/>
-    <path d="M238 312 A19 19 0 0 1 224 339" stroke="#8fe08f" stroke-width="2" fill="none" opacity=".3"/>
+
+    <!-- legs + shoes -->
+    <path d="M104 340 L134 340 L132 386 L102 386 Z" fill="#0d0f0d"/>
+    <path d="M156 340 L186 340 L188 386 L158 386 Z" fill="#0a0c0a"/>
+    <ellipse cx="115" cy="390" rx="30" ry="9" fill="#050605"/>
+    <ellipse cx="176" cy="390" rx="30" ry="9" fill="#050605"/>
+
+    <!-- shorts -->
+    <path d="M96 316 L194 316 L200 356 L154 356 L145 336 L136 356 L90 356 Z" fill="#111511"/>
+    <path d="M96 316 L194 316 L196 328 L94 328 Z" fill="#0c0f0c"/>
+
+    <!-- neck / traps (the head sits here) -->
+    <path d="M100 196 Q145 182 190 196 L198 226 Q145 206 92 226 Z" fill="url(#oSkin)"/>
+
+    <!-- torso -->
+    <path d="M78 224 Q145 200 212 224 Q234 262 224 300 Q214 330 186 322 L104 322 Q76 330 66 300 Q56 262 78 224 Z" fill="url(#oSkin)"/>
+    <!-- pecs -->
+    <path d="M92 240 Q118 232 142 244 Q144 268 120 274 Q96 270 92 240 Z" fill="#1d201d"/>
+    <path d="M198 240 Q172 232 148 244 Q146 268 170 274 Q194 270 198 240 Z" fill="#181b18"/>
+    <path d="M145 244 L145 288" stroke="#0b0d0b" stroke-width="5" stroke-linecap="round"/>
+    <!-- abs -->
+    <path d="M122 284 Q145 278 168 284 M122 300 Q145 294 168 300 M126 314 Q145 309 164 314" stroke="#0b0d0b" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M133 284 L133 316 M157 284 L157 316" stroke="#0b0d0b" stroke-width="3.5" stroke-linecap="round"/>
+
+    <!-- left arm (deltoid, biceps, forearm, fist) -->
+    <circle cx="72" cy="242" r="30" fill="url(#oSkin2)"/>
+    <path d="M52 254 Q38 286 50 312 Q60 330 78 320 Q92 310 84 284 Q78 262 52 254 Z" fill="url(#oSkin2)"/>
+    <path d="M50 306 Q40 336 56 352 Q70 362 82 348 Q92 334 80 316 Z" fill="#161916"/>
+    <circle cx="66" cy="352" r="21" fill="#1b1e1b"/>
+    <path d="M50 344 A21 21 0 0 0 64 372" stroke="#8fe08f" stroke-width="2.5" fill="none" opacity=".4"/>
+    <!-- right arm -->
+    <circle cx="218" cy="242" r="30" fill="url(#oSkin2)"/>
+    <path d="M238 254 Q252 286 240 312 Q230 330 212 320 Q198 310 206 284 Q212 262 238 254 Z" fill="url(#oSkin2)"/>
+    <path d="M240 306 Q250 336 234 352 Q220 362 208 348 Q198 334 210 316 Z" fill="#161916"/>
+    <circle cx="224" cy="352" r="21" fill="#1b1e1b"/>
+    <path d="M240 344 A21 21 0 0 1 226 372" stroke="#8fe08f" stroke-width="2.5" fill="none" opacity=".4"/>
+
+    <!-- green rim light -->
+    <path d="M78 228 Q60 262 68 298" stroke="#8fe08f" stroke-width="3" fill="none" stroke-linecap="round" opacity=".35"/>
+    <path d="M102 200 Q88 208 84 222" stroke="#8fe08f" stroke-width="2.5" fill="none" stroke-linecap="round" opacity=".4"/>
+    <path d="M212 228 Q230 262 222 298" stroke="#8fe08f" stroke-width="2" fill="none" stroke-linecap="round" opacity=".18"/>
   </svg>`,
 
   fist: `
@@ -101,15 +140,29 @@ const SVGS = {
   enemyFist: `
   <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
     <defs>
-      <radialGradient id="eFist" cx="40%" cy="35%" r="80%">
-        <stop offset="0%" stop-color="#262326"/>
-        <stop offset="100%" stop-color="#0d0b0d"/>
+      <radialGradient id="eFist" cx="38%" cy="32%" r="85%">
+        <stop offset="0%" stop-color="#2b272b"/>
+        <stop offset="60%" stop-color="#161316"/>
+        <stop offset="100%" stop-color="#0a080a"/>
       </radialGradient>
+      <filter id="eNeon" x="-40%" y="-40%" width="180%" height="180%">
+        <feGaussianBlur stdDeviation="2.5" result="b"/>
+        <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
     </defs>
-    <ellipse cx="100" cy="105" rx="88" ry="80" fill="url(#eFist)" stroke="#ff5964" stroke-width="6"/>
-    <path d="M30 82 Q54 60 82 66 M86 58 Q104 48 122 58 M128 62 Q152 58 168 76" stroke="#ff5964" stroke-width="6" fill="none" stroke-linecap="round" opacity=".85"/>
-    <path d="M36 130 Q60 148 100 148 Q140 148 164 130" stroke="#ff5964" stroke-width="5" fill="none" stroke-linecap="round" opacity=".45"/>
-    <ellipse cx="70" cy="90" rx="16" ry="11" fill="#3a2f33" opacity=".9"/>
+    <!-- motion streaks -->
+    <path d="M18 40 L58 62 M12 100 L46 100 M18 160 L58 138" stroke="#ff5964" stroke-width="5" stroke-linecap="round" opacity=".45"/>
+    <!-- fist mass -->
+    <path d="M46 78 Q44 44 74 40 Q86 22 106 30 Q118 18 136 28 Q152 22 160 40 Q186 48 184 84 L184 122 Q184 162 148 172 Q96 184 62 160 Q40 142 42 110 Z" fill="url(#eFist)" stroke="#ff5964" stroke-width="5" stroke-linejoin="round" filter="url(#eNeon)"/>
+    <!-- knuckles -->
+    <circle cx="80" cy="58" r="13" fill="#241f24" stroke="#ff5964" stroke-width="3" opacity=".95"/>
+    <circle cx="112" cy="50" r="13" fill="#241f24" stroke="#ff5964" stroke-width="3" opacity=".95"/>
+    <circle cx="144" cy="56" r="12" fill="#241f24" stroke="#ff5964" stroke-width="3" opacity=".95"/>
+    <!-- finger creases -->
+    <path d="M70 96 Q92 108 118 100 M74 124 Q98 136 126 126" stroke="#ff5964" stroke-width="4" fill="none" stroke-linecap="round" opacity=".5"/>
+    <!-- thumb -->
+    <path d="M52 118 Q34 128 40 148 Q48 164 68 156" stroke="#ff5964" stroke-width="4" fill="#1a161a" stroke-linecap="round" opacity=".9"/>
+    <ellipse cx="86" cy="66" rx="14" ry="9" fill="#3a3f3a" opacity=".35"/>
   </svg>`,
 
   blockArms: `
@@ -193,11 +246,15 @@ const G = {
   score: 0,
   blocking: false,
   enraged: false,
+  superDone: false,
   lastPunch: 0,
   nextFist: 'L',
   enemyState: 'idle',   // idle | windup | attack | dazed | ko
   timers: [],
+  t0: 0,
+  finalTime: 0,
 };
+let timerIv = null;
 
 /* ---------------- Assets / placeholders ---------------- */
 let oppHead = null;
@@ -335,6 +392,7 @@ function punch() {
     updateHP();
     updateAvatar();
     maybeEnrage();
+    maybeSuper();
     setOppState(side === 'L' ? 'hitR' : 'hitL');
     popup('+' + CFG.pointsHit, 'good', 44 + Math.random() * 12, 30 + Math.random() * 10);
     sparks(50, 38, '#a8f0b0');
@@ -353,9 +411,66 @@ function maybeEnrage() {
   if (G.enraged || G.enemyHP > CFG.enemyHP * CFG.enrageAt) return;
   G.enraged = true;
   opponent.classList.add('enraged');
-  popup('ENRAGED!', 'bad', 50, 24);
-  sparks(50, 30, '#ff5964', 10);
+  popup('SUPER RAGE!', 'bad', 50, 24);
+  sparks(50, 30, '#ff5964', 12);
   Sound.enrage();
+}
+
+/* SUPER POWER — fires once at 20% HP. Block it or die instantly. */
+function maybeSuper() {
+  if (G.superDone || !G.running || G.enemyHP <= 0 || G.enemyHP > CFG.enemyHP * CFG.superAt) return;
+  if (G.enemyState === 'attack') { setTimeout(maybeSuper, 400); return; } // wait out the current swing
+  G.superDone = true;
+
+  // cancel everything else he was planning
+  G.timers.forEach(clearTimeout);
+  G.timers = [];
+
+  G.enemyState = 'windup';
+  setOppState('windup');
+  stage.classList.add('super-charge');
+  popup('⚡ SUPER ATTACK — BLOCK!', 'bad', 50, 30);
+  Sound.enrage();
+  Sound.warn();
+
+  G.timers.push(setTimeout(() => {
+    stage.classList.remove('super-charge');
+    if (!G.running) return;
+    G.enemyState = 'attack';
+    setOppState('attack');
+    enemyFist.style.left = '50%';
+    enemyFist.classList.remove('hidden', 'flying');
+    void enemyFist.offsetWidth;
+    enemyFist.classList.add('flying', 'super');
+    Sound.whoosh();
+    shake();
+
+    G.timers.push(setTimeout(() => {
+      enemyFist.classList.add('hidden');
+      enemyFist.classList.remove('flying', 'super');
+      if (!G.running) return;
+
+      if (G.blocking) {
+        addScore(CFG.superBonus);
+        Sound.block();
+        popup('SURVIVED! +' + CFG.superBonus, 'info', 50, 55);
+        sparks(50, 60, '#8fe08f', 14);
+        G.enemyState = 'dazed';
+        setOppState('dazed');
+        G.timers.push(setTimeout(() => {
+          if (G.running && G.enemyState === 'dazed') { G.enemyState = 'idle'; setOppState('idle'); }
+        }, 2000));
+        scheduleAttack();
+      } else {
+        G.playerHP = 0;
+        updateHP();
+        flash(700);
+        shake();
+        popup('FATAL!', 'bad', 50, 48);
+        return ko(false);
+      }
+    }, CFG.attackTime));
+  }, CFG.superChargeTime));
 }
 
 function startBlock() {
@@ -394,7 +509,9 @@ function enemyAttack() {
   if (!G.running) return;
   G.enemyState = 'attack';
   setOppState('attack');
-  enemyFist.classList.remove('hidden', 'flying');
+  // vary the swing: left hook, right hook or straight
+  enemyFist.style.left = (38 + Math.random() * 24).toFixed(1) + '%';
+  enemyFist.classList.remove('hidden', 'flying', 'super');
   void enemyFist.offsetWidth;
   enemyFist.classList.add('flying');
   Sound.whoosh();
@@ -435,12 +552,26 @@ function enemyAttack() {
   }, CFG.attackTime));
 }
 
+/* ---------------- Match timer ---------------- */
+function startTimer() {
+  G.t0 = performance.now();
+  clearInterval(timerIv);
+  timerIv = setInterval(() => {
+    $('timer').textContent = ((performance.now() - G.t0) / 1000).toFixed(1) + 's';
+  }, 100);
+}
+function stopTimer() {
+  clearInterval(timerIv);
+  G.finalTime = G.t0 ? (performance.now() - G.t0) / 1000 : 0;
+}
+
 /* ---------------- Game over ---------------- */
 function ko(playerWon) {
   G.running = false;
   G.timers.forEach(clearTimeout);
   G.timers = [];
   stopBlock();
+  stopTimer();
 
   if (playerWon) {
     G.enemyState = 'ko';
@@ -462,8 +593,9 @@ function ko(playerWon) {
       ? 'The alley is yours. The Bull will think twice.'
       : 'The Bull won this one. Get up and try again!';
     $('endScore').textContent = G.score;
+    $('endTime').textContent = G.finalTime.toFixed(1) + 's';
     $('screenEnd').classList.remove('hidden');
-    window.dispatchEvent(new CustomEvent('bullfun:end', { detail: { score: G.score, won: playerWon } }));
+    window.dispatchEvent(new CustomEvent('bullfun:end', { detail: { score: G.score, won: playerWon, time: G.finalTime } }));
   }, playerWon ? 1600 : 900);
 }
 
@@ -474,13 +606,18 @@ function resetGame() {
   G.score = 0;
   G.blocking = false;
   G.enraged = false;
+  G.superDone = false;
   G.nextFist = 'L';
   G.enemyState = 'idle';
   G.timers.forEach(clearTimeout);
   G.timers = [];
+  clearInterval(timerIv);
+  $('timer').textContent = '0.0s';
   enemyFist.classList.add('hidden');
-  enemyFist.classList.remove('flying');
+  enemyFist.classList.remove('flying', 'super');
+  enemyFist.style.left = '50%';
   opponent.classList.remove('enraged');
+  stage.classList.remove('super-charge');
   addScore(0);
   updateHP();
   updateAvatar();
@@ -490,6 +627,7 @@ function resetGame() {
 function startGame() {
   resetGame();
   G.running = true;
+  startTimer();
   scheduleAttack();
 }
 

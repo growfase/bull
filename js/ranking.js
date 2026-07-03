@@ -154,6 +154,8 @@
 
   loadConfig().then(() => {
     if (cfg?.priceSol) btnRegister.textContent = '🏆 Register score · ' + cfg.priceSol + ' SOL';
+    const note = document.getElementById('depositNote');
+    if (note && cfg?.recipient) note.textContent = 'Deposit goes to: ' + short(cfg.recipient);
   });
   loadBoard();
 })();

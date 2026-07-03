@@ -106,6 +106,7 @@
               <div class="hp-face" id="enemyFace" data-asset="enemyAvatar"></div>
             </div>
             <div class="score" id="score">0 <small>PTS</small></div>
+            <div class="timer" id="timer">0.0s</div>
           </div>
 
           <!-- FX layer -->
@@ -135,10 +136,11 @@
             <div class="screen-card">
               <h3 id="endTitle">KNOCKOUT!</h3>
               <p id="endMsg">You cleared the alley.</p>
-              <p class="end-score">SCORE: <b id="endScore">0</b></p>
+              <p class="end-score">SCORE: <b id="endScore">0</b> · TIME: <b id="endTime">0.0s</b></p>
               <div class="register-box">
                 <input id="playerName" class="name-input" type="text" maxlength="20" placeholder="Your name (optional)">
                 <button class="btn btn-wallet" id="btnRegister">🏆 Register score · 0.1 SOL</button>
+                <p class="deposit-note" id="depositNote"></p>
                 <p class="reg-status" id="regStatus"></p>
               </div>
               <button class="btn btn-primary" id="btnRestart">Fight again</button>
