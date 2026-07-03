@@ -1,8 +1,8 @@
-# BULLIFY — Put The Horns On 🤘
+# BULLFUN — Put The Horns On 🤘
 
 First-person brawler landing page. Face the Bull in the alley: click to punch,
 hold to block, knock him out. A tribute to the classic Flash-era brawlers,
-restyled with the BULLIFY identity (deep black + neon green glow).
+restyled with the BULLFUN identity (deep black + neon green glow).
 
 ## Run locally
 

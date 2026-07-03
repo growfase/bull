@@ -35,7 +35,7 @@ const CFG = {
    PLACEHOLDERS SVG (touro de desenho animado)
    ============================================================ */
 const SVGS = {
-  /* Touro Bullify: cabeça escura 3D, chifres pretos com fio de luz
+  /* Touro Bullfun: cabeça escura 3D, chifres pretos com fio de luz
      verde e aura esfumaçada — baseado na arte de referência. */
   opponent: (mood) => {
     // mood: 'ok' | 'hurt' | 'mad'
