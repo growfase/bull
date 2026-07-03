@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BULLIFY — Put The Horns On</title>
+  <meta name="description" content="Put the horns on and face the Bull in the alley! First-person brawler: punch, block and knock him out.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ===================== HEADER ===================== -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="logo" href="#top"><svg class="logo-horns" viewBox="0 0 60 26" aria-hidden="true"><path d="M4 2 Q2 16 16 22 Q10 14 12 6 Q16 12 22 14 Q14 8 14 2 Z" fill="currentColor"/><path d="M56 2 Q58 16 44 22 Q50 14 48 6 Q44 12 38 14 Q46 8 46 2 Z" fill="currentColor"/></svg><span>BULLIFY</span></a>
+      <nav class="nav">
+        <a href="#jogo">Play</a>
+        <a href="#como-jogar">How to play</a>
+        <a href="#sobre">About</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ===================== HERO ===================== -->
+  <section class="hero" id="top">
+    <div class="hero-glow"></div>
+    <div class="container hero-inner">
+      <p class="hero-kicker"><i class="dot"></i> $BULLIFY IS LIVE ON PUMP.FUN</p>
+      <p class="hero-topline">THE BULL MARKET IS HERE · SOLANA</p>
+      <h1 class="hero-title"><em>BULLIFY</em></h1>
+      <p class="hero-tagline">PUT THE HORNS ON.</p>
+      <p class="hero-sub">The Bull is guarding the alley and there's only one way through:
+        <strong>your fists</strong>. Put the horns on, click to punch,
+        hold to block and send him to the ground.</p>
+      <div class="hero-cta">
+        <a href="#jogo" class="btn btn-primary">Play now</a>
+        <a href="#como-jogar" class="btn btn-ghost">How to play</a>
+      </div>
+      <div class="hero-stats">
+        <div><b>+250</b><span>pts per punch</span></div>
+        <div><b>1</b><span>furious bull</span></div>
+        <div><b>0</b><span>mercy</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== GAME ===================== -->
+  <section class="game-section" id="jogo">
+    <div class="container">
+      <h2 class="section-title">Enter the alley</h2>
+
+      <div class="stage-frame">
+        <div id="stage" class="stage">
+
+          <!-- Background -->
+          <div class="bg" data-asset="background">
+            <div class="bg-sky"></div>
+            <div class="bg-sign">BULLIFY</div>
+            <div class="bg-building bg-building-l"></div>
+            <div class="bg-building bg-building-r"></div>
+            <div class="bg-dumpster"></div>
+            <div class="bg-floor"></div>
+            <div class="bg-vignette"></div>
+          </div>
+
+          <!-- Opponent -->
+          <div id="opponent" class="opponent state-idle">
+            <div class="sprite opp-sprite" data-asset="opponent"></div>
+          </div>
+
+          <!-- Enemy fist (incoming attack) -->
+          <div id="enemyFist" class="enemy-fist hidden">
+            <div class="sprite" data-asset="enemyFist"></div>
+          </div>
+
+          <!-- Damage overlay -->
+          <div id="hitFlash" class="hit-flash"></div>
+
+          <!-- Blocking arms -->
+          <div id="blockArms" class="block-arms hidden">
+            <div class="sprite" data-asset="blockArms"></div>
+            <div class="block-label">BLOCKING</div>
+          </div>
+
+          <!-- Player fists -->
+          <div id="fistL" class="fist fist-l"><div class="sprite" data-asset="fistLeft"></div></div>
+          <div id="fistR" class="fist fist-r"><div class="sprite" data-asset="fistRight"></div></div>
+
+          <!-- Block zone -->
+          <div id="blockZone" class="block-zone" title="Hold to block">
+            <span>BLOCK — hold here (or SPACE)</span>
+          </div>
+
+          <!-- HUD -->
+          <div class="hud">
+            <div class="hp hp-player">
+              <div class="hp-bar" id="hpPlayer"></div>
+              <div class="hp-tag">YOU</div>
+            </div>
+            <div class="hp hp-enemy">
+              <div class="hp-bar" id="hpEnemy"></div>
+              <div class="hp-face" id="enemyFace" data-asset="enemyAvatar"></div>
+            </div>
+            <div class="score" id="score">0 <small>PTS</small></div>
+          </div>
+
+          <!-- FX layer -->
+          <div id="fxLayer" class="fx-layer"></div>
+
+          <!-- Screens -->
+          <div id="screenIntro" class="screen">
+            <div class="screen-card">
+              <h3 class="brawl-logo"><span>BULLIFY</span></h3>
+              <p>The alley is his. Or it was. <b>Put the horns on.</b></p>
+              <button class="btn btn-primary" id="btnStart">Fight</button>
+            </div>
+          </div>
+
+          <div id="screenTutorial" class="screen hidden">
+            <div class="screen-card">
+              <h3>TUTORIAL</h3>
+              <ol class="tut-list">
+                <li><b>1.</b> CLICK the screen to PUNCH</li>
+                <li><b>2.</b> When he attacks, HOLD the <b>BLOCK</b> bar (or SPACE) to DEFEND</li>
+              </ol>
+              <button class="btn btn-primary" id="btnGo">OK, let's go</button>
+            </div>
+          </div>
+
+          <div id="screenEnd" class="screen hidden">
+            <div class="screen-card">
+              <h3 id="endTitle">KNOCKOUT!</h3>
+              <p id="endMsg">You cleared the alley.</p>
+              <p class="end-score">SCORE: <b id="endScore">0</b></p>
+              <button class="btn btn-primary" id="btnRestart">Fight again</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <p class="stage-hint">💡 Tip: fast punches fill the score, but keep an eye on the red fist.</p>
+    </div>
+  </section>
+
+  <!-- ===================== HOW TO PLAY ===================== -->
+  <section class="how-section" id="como-jogar">
+    <div class="container">
+      <h2 class="section-title">How to play</h2>
+      <div class="cards">
+        <div class="card">
+          <div class="card-ico">👊</div>
+          <h3>Punch</h3>
+          <p>Click anywhere on the screen to throw a punch. Every hit is worth <b>+250 pts</b> and drains the Bull's health.</p>
+        </div>
+        <div class="card">
+          <div class="card-ico">🛡️</div>
+          <h3>Block</h3>
+          <p>When the red fist comes at your face, hold the <b>BLOCK</b> bar (or <b>SPACE</b>) to raise your guard. A perfect block earns a bonus!</p>
+        </div>
+        <div class="card">
+          <div class="card-ico">💀</div>
+          <h3>Knock out</h3>
+          <p>Empty the red bar before he empties yours. Send the Bull to the ground and own the alley.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== ABOUT ===================== -->
+  <section class="about-section" id="sobre">
+    <div class="container about-inner">
+      <h2 class="section-title">About the game</h2>
+      <p>BULLIFY is a tribute to the classic first-person brawlers from the golden
+      age of Flash — now with the horns on. No downloads, no sign-up: open it, punch.
+      Works on desktop and mobile.</p>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="container">
+      <span class="logo logo-sm"><span>BULLIFY</span></span>
+      <span>© 2026 — Put the horns on. 🤘</span>
+    </div>
+  </footer>
+
+  <script src="js/game.js"></script>
+</body>
+</html>
