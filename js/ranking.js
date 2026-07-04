@@ -16,6 +16,8 @@
   const regStatus = document.getElementById('regStatus');
   const nameInput = document.getElementById('playerName');
   const btnConnect = document.getElementById('btnConnect');
+  const regForm = document.getElementById('regForm');
+  const regSuccess = document.getElementById('regSuccess');
 
   let lastScore = null;   // score of the finished match
   let lastTime = null;    // duration of the finished match
@@ -68,14 +70,27 @@
       document.getElementById('jogo').scrollIntoView({ behavior: 'smooth' });
       return;
     }
-    document.getElementById('sumScore').textContent = Number(lastScore).toLocaleString('en-US');
-    document.getElementById('sumTime').textContent = lastTime != null ? lastTime.toFixed(1) + 's' : '0.0s';
-    btnConnect.textContent = walletAddr ? 'Register score' : 'Connect wallet and register';
-    btnConnect.disabled = registered;
-    setStatus(registered ? 'This score is already registered. 🏆' : '', registered ? 'ok' : '');
+    // já registrado nesta partida → mostra direto a confirmação
+    regForm.classList.toggle('hidden', registered);
+    regSuccess.classList.toggle('hidden', !registered);
+    if (!registered) {
+      document.getElementById('sumScore').textContent = Number(lastScore).toLocaleString('en-US');
+      document.getElementById('sumTime').textContent = lastTime != null ? lastTime.toFixed(1) + 's' : '0.0s';
+      btnConnect.textContent = walletAddr ? 'Register score' : 'Connect wallet and register';
+      btnConnect.disabled = false;
+      setStatus('');
+    }
     modal.classList.remove('hidden');
   }
   function closeModal() { modal.classList.add('hidden'); }
+
+  function showSuccess(rank) {
+    document.getElementById('successRank').textContent = rank ? '#' + rank : 'on the board';
+    document.getElementById('successScore').textContent = Number(lastScore).toLocaleString('en-US');
+    document.getElementById('successName').textContent = nameInput.value.trim() || short(walletAddr);
+    regForm.classList.add('hidden');
+    regSuccess.classList.remove('hidden');
+  }
 
   /* ---------------- wallet ---------------- */
   function provider() {
@@ -146,7 +161,7 @@
       local.sort((a, b) => b.score - a.score);
       localStorage.setItem(LS_KEY, JSON.stringify(local.slice(0, 20)));
 
-      setStatus(data.rank ? `Registered! You're #${data.rank} 🏆` : 'Registered! 🏆', 'ok');
+      showSuccess(data.rank);
       loadBoard();
     } catch (e) {
       const msg = /reject|denied|cancel/i.test(String(e?.message)) ? 'Signature cancelled.' : (e?.message || 'Something went wrong.');
@@ -172,6 +187,11 @@
   window.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
   btnConnect.addEventListener('click', register);
   btnWallet.addEventListener('click', () => connectWallet(true));
+  document.getElementById('btnCloseSuccess').addEventListener('click', closeModal);
+  document.getElementById('btnViewRank').addEventListener('click', () => {
+    closeModal();
+    document.getElementById('ranking').scrollIntoView({ behavior: 'smooth' });
+  });
 
   updateWalletUI();
   connectWallet(false); // restore a previously trusted session silently

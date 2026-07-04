@@ -712,6 +712,25 @@ img { max-width: 100%; display: block; }
 .btn-block { width: 100%; }
 .modal-card .rank-note { margin-top: 12px; }
 
+/* confirmação de registro */
+.reg-success { text-align: center; }
+.success-ico {
+  font-size: 3.2rem; line-height: 1;
+  margin-bottom: 12px;
+  filter: drop-shadow(0 0 22px rgba(255,217,74,.75));
+  animation: trophy-pop .5s cubic-bezier(.2,1.6,.4,1);
+}
+@keyframes trophy-pop {
+  0% { transform: scale(0) rotate(-20deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+.success-rank { color: var(--muted); margin-bottom: 18px; font-size: 1.05rem; }
+.success-rank b {
+  color: var(--glow); font-weight: 800; font-size: 1.5rem;
+  text-shadow: 0 0 18px var(--glow-soft);
+}
+.success-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 6px; }
+
 /* ---------- Ranking ---------- */
 .rank-section { padding: 80px 0 40px; }
 .rank-sub {

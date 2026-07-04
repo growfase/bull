@@ -189,19 +189,36 @@
   <div id="regModal" class="modal hidden" role="dialog" aria-modal="true">
     <div class="modal-card">
       <button class="modal-close" id="modalClose" aria-label="Close">✕</button>
-      <h3 class="modal-title">Register your score</h3>
+      <div id="regForm">
+        <h3 class="modal-title">Register your score</h3>
 
-      <div class="reg-summary">
-        <div><span>Score</span><b id="sumScore">0</b></div>
-        <div><span>Time</span><b id="sumTime">0.0s</b></div>
+        <div class="reg-summary">
+          <div><span>Score</span><b id="sumScore">0</b></div>
+          <div><span>Time</span><b id="sumTime">0.0s</b></div>
+        </div>
+
+        <input id="playerName" class="name-input" type="text" maxlength="20" placeholder="Your name on the ranking (optional)">
+
+        <button class="btn btn-wallet btn-block" id="btnConnect">Connect wallet and register</button>
+        <p class="rank-note">Playing is always free. Connecting your wallet just puts your score on the board: you sign a free message, no payment, no transaction.</p>
+
+        <p class="reg-status" id="regStatus"></p>
       </div>
 
-      <input id="playerName" class="name-input" type="text" maxlength="20" placeholder="Your name on the ranking (optional)">
-
-      <button class="btn btn-wallet btn-block" id="btnConnect">Connect wallet and register</button>
-      <p class="rank-note">Playing is always free. Connecting your wallet just puts your score on the board: you sign a free message, no payment, no transaction.</p>
-
-      <p class="reg-status" id="regStatus"></p>
+      <!-- confirmação de registro -->
+      <div id="regSuccess" class="reg-success hidden">
+        <div class="success-ico">🏆</div>
+        <h3 class="modal-title">Score registered!</h3>
+        <p class="success-rank">You're <b id="successRank">#1</b> on the board</p>
+        <div class="reg-summary">
+          <div><span>Score</span><b id="successScore">0</b></div>
+          <div><span>Fighter</span><b id="successName">?</b></div>
+        </div>
+        <div class="success-actions">
+          <button class="btn btn-primary" id="btnViewRank">View ranking</button>
+          <button class="btn btn-ghost" id="btnCloseSuccess">Close</button>
+        </div>
+      </div>
     </div>
   </div>
 
