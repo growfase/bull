@@ -21,6 +21,7 @@
 
   let lastScore = null;   // score of the finished match
   let lastTime = null;    // duration of the finished match
+  let lastWon = false;    // only victories enter the ranking (time matters)
   let registered = false; // this match's score is already in
   let busy = false;
   let walletAddr = null;  // connected wallet (optional, only for ranking)
@@ -39,8 +40,8 @@
   /* ---------------- leaderboard ---------------- */
   function render(scores, localOnly = false) {
     if (!scores.length) {
-      rankBody.innerHTML = `<tr><td colspan="4" class="rank-empty">${
-        localOnly ? 'Ranking unavailable offline. Play online to compete!' : 'No scores yet. Be the first bull in the alley!'
+      rankBody.innerHTML = `<tr><td colspan="5" class="rank-empty">${
+        localOnly ? 'Ranking unavailable offline. Play online to compete!' : 'Nobody has dropped Ansem yet. Be the first!'
       }</td></tr>`;
       return;
     }
@@ -50,6 +51,7 @@
         <td class="rank-pos">${medals[i] || i + 1}</td>
         <td>${esc(s.name || short(s.wallet))}</td>
         <td class="rank-wallet">${short(s.wallet)}</td>
+        <td class="ta-r rank-time">${s.time != null ? (s.time / 1000).toFixed(1) + 's' : '?'}</td>
         <td class="ta-r rank-score">${Number(s.score).toLocaleString('en-US')}</td>
       </tr>`).join('');
   }
@@ -66,7 +68,7 @@
 
   /* ---------------- modal ---------------- */
   function openModal() {
-    if (lastScore == null || lastScore <= 0) {
+    if (lastScore == null || lastScore <= 0 || !lastWon) {
       document.getElementById('jogo').scrollIntoView({ behavior: 'smooth' });
       return;
     }
@@ -86,6 +88,7 @@
 
   function showSuccess(rank) {
     document.getElementById('successRank').textContent = rank ? '#' + rank : 'on the board';
+    document.getElementById('successTime').textContent = lastTime != null ? lastTime.toFixed(1) + 's' : '?';
     document.getElementById('successScore').textContent = Number(lastScore).toLocaleString('en-US');
     document.getElementById('successName').textContent = nameInput.value.trim() || short(walletAddr);
     regForm.classList.add('hidden');
@@ -137,7 +140,8 @@
 
       setStatus('Sign the message in Phantom to confirm…');
       const ts = Date.now();
-      const message = `BULLFUN ranking registration\nscore:${Math.floor(lastScore)}\nts:${ts}`;
+      const timeMs = Math.round((lastTime || 0) * 1000);
+      const message = `BULLFUN ranking registration\nscore:${Math.floor(lastScore)}\ntime:${timeMs}\nts:${ts}`;
       const signed = await ph.signMessage(new TextEncoder().encode(message), 'utf8');
       const sigBytes = signed.signature || signed;
       const signature = btoa(String.fromCharCode(...new Uint8Array(sigBytes)));
@@ -149,6 +153,7 @@
         body: JSON.stringify({
           name: nameInput.value.trim(),
           score: Math.floor(lastScore),
+          time: timeMs,
           wallet, ts, signature,
         }),
       });
@@ -157,7 +162,7 @@
 
       registered = true;
       const local = JSON.parse(localStorage.getItem(LS_KEY) || '[]');
-      local.push({ name: nameInput.value.trim(), wallet, score: lastScore, ts });
+      local.push({ name: nameInput.value.trim(), wallet, score: lastScore, time: timeMs, ts });
       local.sort((a, b) => b.score - a.score);
       localStorage.setItem(LS_KEY, JSON.stringify(local.slice(0, 20)));
 
@@ -176,8 +181,11 @@
   window.addEventListener('bullfun:end', (e) => {
     lastScore = e.detail.score;
     lastTime = e.detail.time;
+    lastWon = !!e.detail.won;
     registered = false;
-    document.getElementById('btnRegister').disabled = false;
+    const btn = document.getElementById('btnRegister');
+    btn.disabled = !lastWon;
+    btn.textContent = lastWon ? '🏆 Register score' : 'Beat Ansem to register';
   });
 
   document.getElementById('btnRegister').addEventListener('click', openModal);

@@ -756,7 +756,9 @@ img { max-width: 100%; display: block; }
 .rank-pos { width: 46px; font-size: 1.05rem; }
 .rank-top td { background: rgba(143,224,143,.04); }
 .rank-wallet { color: var(--muted); font-size: .85rem; font-family: monospace; }
-.rank-score { font-weight: 800; color: var(--glow); text-shadow: 0 0 12px var(--glow-soft); }
+.rank-time { font-weight: 800; color: var(--glow); text-shadow: 0 0 12px var(--glow-soft); }
+.rank-score { font-weight: 600; color: var(--muted); }
+.reg-summary-3 { grid-template-columns: repeat(3, 1fr); }
 .ta-r { text-align: right; }
 .rank-empty { text-align: center; color: var(--muted); padding: 30px 10px !important; }
 .rank-note { text-align: center; color: var(--muted); font-size: .82rem; margin-top: 16px; }

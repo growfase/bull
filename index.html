@@ -166,15 +166,15 @@
   <section class="rank-section" id="ranking">
     <div class="container">
       <h2 class="section-title">Ranking</h2>
-      <p class="rank-sub">Playing is free, no wallet needed. But if you want your score
-        on the board, connect your <b>Solana wallet</b> and claim your spot.</p>
+      <p class="rank-sub">Fastest to drop Ansem tops the board. Playing is free, no wallet
+        needed; connect your <b>Solana wallet</b> only to claim your spot.</p>
       <div class="rank-board">
         <table class="rank-table">
           <thead>
-            <tr><th>#</th><th>Fighter</th><th>Wallet</th><th class="ta-r">Score</th></tr>
+            <tr><th>#</th><th>Fighter</th><th>Wallet</th><th class="ta-r">Time</th><th class="ta-r">Score</th></tr>
           </thead>
           <tbody id="rankBody">
-            <tr><td colspan="4" class="rank-empty">Loading ranking…</td></tr>
+            <tr><td colspan="5" class="rank-empty">Loading ranking…</td></tr>
           </tbody>
         </table>
       </div>
@@ -210,7 +210,8 @@
         <div class="success-ico">🏆</div>
         <h3 class="modal-title">Score registered!</h3>
         <p class="success-rank">You're <b id="successRank">#1</b> on the board</p>
-        <div class="reg-summary">
+        <div class="reg-summary reg-summary-3">
+          <div><span>Time</span><b id="successTime">0.0s</b></div>
           <div><span>Score</span><b id="successScore">0</b></div>
           <div><span>Fighter</span><b id="successName">?</b></div>
         </div>

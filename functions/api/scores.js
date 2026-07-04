@@ -1,13 +1,16 @@
 // /api/scores — leaderboard backed by Cloudflare KV.
-// GET  → { scores: [{name, wallet, score, ts}] }
-// POST → { name?, score, wallet, ts, signature }
+// GET  → { scores: [{name, wallet, score, time, ts}] }
+// POST → { name?, score, time, wallet, ts, signature }
 // Registration is free: the player signs a message with their Solana
-// wallet and the server verifies the Ed25519 signature. One entry per
-// wallet; the best score wins.
+// wallet and the server verifies the Ed25519 signature. Only boss-kill
+// runs enter the board; the FASTEST time ranks first (score breaks
+// ties). One entry per wallet, best time wins.
 
 const TOP_KEY = 'top';
 const MAX_ENTRIES = 100;
-const MAX_AGE_MS = 15 * 60 * 1000; // signed message must be fresh
+const MAX_AGE_MS = 15 * 60 * 1000;  // signed message must be fresh
+const MIN_TIME_MS = 5_000;          // faster than this is not a real run
+const MAX_TIME_MS = 3_600_000;
 
 const B58 = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
 function base58Decode(str) {
@@ -23,9 +26,12 @@ function base58Decode(str) {
   return new Uint8Array(bytes);
 }
 
+const rankSort = (a, b) =>
+  (a.time ?? Infinity) - (b.time ?? Infinity) || b.score - a.score || a.ts - b.ts;
+
 export async function onRequestGet({ env }) {
   const scores = JSON.parse((await env.SCORES.get(TOP_KEY)) || '[]');
-  return Response.json({ scores: scores.map(({ sig, ...s }) => s) });
+  return Response.json({ scores });
 }
 
 export async function onRequestPost({ request, env }) {
@@ -34,20 +40,23 @@ export async function onRequestPost({ request, env }) {
   let body;
   try { body = await request.json(); } catch { return bad('invalid json'); }
 
-  const { name, wallet, score, ts, signature } = body || {};
+  const { name, wallet, score, time, ts, signature } = body || {};
   if (typeof wallet !== 'string' || wallet.length < 32 || wallet.length > 50) return bad('invalid wallet');
   if (typeof score !== 'number' || !isFinite(score) || score < 0 || score > 10_000_000) return bad('invalid score');
+  if (typeof time !== 'number' || !isFinite(time) || time < MIN_TIME_MS || time > MAX_TIME_MS) return bad('invalid time');
   if (typeof ts !== 'number' || Math.abs(Date.now() - ts) > MAX_AGE_MS) return bad('expired signature, try again');
   if (typeof signature !== 'string' || signature.length < 60 || signature.length > 120) return bad('invalid signature');
 
-  // Verify the wallet really signed this exact message
+  // Verify the wallet really signed this exact run (score + time + ts)
   const pubBytes = base58Decode(wallet);
   if (!pubBytes || pubBytes.length !== 32) return bad('invalid wallet');
   let sigBytes;
   try { sigBytes = Uint8Array.from(atob(signature), c => c.charCodeAt(0)); } catch { return bad('invalid signature'); }
   if (sigBytes.length !== 64) return bad('invalid signature');
 
-  const message = new TextEncoder().encode(`BULLFUN ranking registration\nscore:${Math.floor(score)}\nts:${ts}`);
+  const message = new TextEncoder().encode(
+    `BULLFUN ranking registration\nscore:${Math.floor(score)}\ntime:${Math.round(time)}\nts:${ts}`
+  );
   let ok = false;
   try {
     const key = await crypto.subtle.importKey('raw', pubBytes, { name: 'Ed25519' }, false, ['verify']);
@@ -55,18 +64,22 @@ export async function onRequestPost({ request, env }) {
   } catch { return bad('signature verification unavailable', 500); }
   if (!ok) return bad('signature does not match wallet');
 
-  // Upsert: one spot per wallet, best score counts
+  // Upsert: one spot per wallet, best (lowest) time wins
   const entry = {
     name: String(name || '').trim().slice(0, 20) || wallet.slice(0, 4) + '…' + wallet.slice(-4),
     wallet,
     score: Math.floor(score),
+    time: Math.round(time),
     ts: Date.now(),
   };
   const scores = JSON.parse((await env.SCORES.get(TOP_KEY)) || '[]');
   const existing = scores.findIndex(s => s.wallet === wallet);
   if (existing >= 0) {
-    if (scores[existing].score >= entry.score) {
-      scores.sort((a, b) => b.score - a.score || a.ts - b.ts);
+    const old = scores[existing];
+    const oldBetter = (old.time ?? Infinity) < entry.time ||
+      ((old.time ?? Infinity) === entry.time && old.score >= entry.score);
+    if (oldBetter) {
+      scores.sort(rankSort);
       const rank = scores.findIndex(s => s.wallet === wallet) + 1;
       return Response.json({ ok: true, rank, kept: true });
     }
@@ -74,7 +87,7 @@ export async function onRequestPost({ request, env }) {
   } else {
     scores.push(entry);
   }
-  scores.sort((a, b) => b.score - a.score || a.ts - b.ts);
+  scores.sort(rankSort);
   const trimmed = scores.slice(0, MAX_ENTRIES);
   await env.SCORES.put(TOP_KEY, JSON.stringify(trimmed));
 
