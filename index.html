@@ -137,13 +137,10 @@
               <h3 id="endTitle">KNOCKOUT!</h3>
               <p id="endMsg">You cleared the alley.</p>
               <p class="end-score">SCORE: <b id="endScore">0</b> · TIME: <b id="endTime">0.0s</b></p>
-              <div class="register-box">
-                <input id="playerName" class="name-input" type="text" maxlength="20" placeholder="Your name (optional)">
+              <div class="end-actions">
                 <button class="btn btn-wallet" id="btnRegister">🏆 Register score · 0.1 SOL</button>
-                <p class="deposit-note" id="depositNote"></p>
-                <p class="reg-status" id="regStatus"></p>
+                <button class="btn btn-primary" id="btnRestart">Fight again</button>
               </div>
-              <button class="btn btn-primary" id="btnRestart">Fight again</button>
             </div>
           </div>
 
@@ -170,8 +167,45 @@
         </table>
       </div>
       <p class="rank-note">Payments are verified on-chain. Each transaction registers one score.</p>
+      <div class="rank-cta">
+        <button class="btn btn-wallet" id="btnRegister2">🏆 Register my score</button>
+      </div>
     </div>
   </section>
+
+  <!-- ===================== REGISTER MODAL ===================== -->
+  <div id="regModal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <button class="modal-close" id="modalClose" aria-label="Close">✕</button>
+      <h3 class="modal-title">Register your score</h3>
+
+      <div class="reg-summary">
+        <div><span>Score</span><b id="sumScore">0</b></div>
+        <div><span>Time</span><b id="sumTime">—</b></div>
+        <div><span>Fee</span><b id="sumFee">0.1 SOL</b></div>
+      </div>
+
+      <input id="playerName" class="name-input" type="text" maxlength="20" placeholder="Your name on the ranking (optional)">
+
+      <div class="pay-grid">
+        <div class="qr-box">
+          <div id="qrCode"></div>
+          <p>Scan with any Solana wallet</p>
+        </div>
+        <div class="pay-info">
+          <p class="pay-label">Deposit wallet</p>
+          <div class="pay-addr-row">
+            <code id="payAddr">—</code>
+            <button class="copy-btn" id="btnCopyAddr" title="Copy address">⧉</button>
+          </div>
+          <button class="btn btn-wallet" id="btnPhantom">Pay with Phantom</button>
+          <button class="btn btn-ghost btn-verify" id="btnVerify">I've paid — verify</button>
+        </div>
+      </div>
+
+      <p class="reg-status" id="regStatus"></p>
+    </div>
+  </div>
 
   <!-- ===================== HOW TO PLAY ===================== -->
   <section class="how-section" id="como-jogar">
@@ -215,6 +249,7 @@
   </footer>
 
   <script src="https://unpkg.com/@solana/web3.js@1.98.0/lib/index.iife.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script src="js/game.js"></script>
   <script src="js/ranking.js"></script>
 </body>

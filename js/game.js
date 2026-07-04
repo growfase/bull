@@ -28,30 +28,33 @@ const HEADS = {
 /* ---------------- Game tuning ---------------- */
 const CFG = {
   playerHP: 10,
-  enemyHP: 30,
+  enemyHP: 40,
   pointsHit: 250,
   pointsBlock: 500,
   pointsHurt: -250,
   punchCooldown: 200,        // ms between punches
 
   // boss — base difficulty
-  attackMinDelay: 1500,      // ms between enemy attacks
-  attackMaxDelay: 3200,
-  windupTime: 500,           // ms of warning before the attack
-  attackTime: 460,           // ms the fist flies (block window)
-  dodgeChance: 0.2,          // chance the boss dodges a punch
+  attackMinDelay: 1200,      // ms between enemy attacks
+  attackMaxDelay: 2600,
+  windupTime: 440,           // ms of warning before the attack
+  attackTime: 440,           // ms the fist flies (block window)
+  dodgeChance: 0.24,         // chance the boss dodges a punch
+  counterChance: 0.4,        // chance he counter-attacks right after dodging
+  dazedTime: 1100,           // ms he stays open after a blocked hit
 
   // boss — SUPER RAGE (below 30% HP): red glow, relentless
   enrageAt: 0.3,
-  enrageMinDelay: 850,
-  enrageMaxDelay: 1900,
-  enrageWindup: 330,
-  enrageDodge: 0.3,
-  doubleAttackChance: 0.5,   // chance of an immediate follow-up attack
+  enrageMinDelay: 600,
+  enrageMaxDelay: 1400,
+  enrageWindup: 260,
+  enrageDodge: 0.34,
+  doubleAttackChance: 0.6,   // chance of an immediate follow-up attack
+  enrageDazedTime: 750,
 
   // boss — SUPER POWER (at 20% HP): unblocked = instant death
   superAt: 0.2,
-  superChargeTime: 950,      // ms of warning to get the block up
+  superChargeTime: 850,      // ms of warning to get the block up
   superBonus: 1000,          // points for surviving it
 };
 
@@ -377,10 +380,13 @@ function punch() {
   // can't land while he's mid-attack
   if (G.enemyState === 'attack' || G.enemyState === 'ko') return;
 
-  // dodge (better reflexes when enraged)
+  // dodge (better reflexes when enraged) — and he punishes whiffs
   const dodge = G.enraged ? CFG.enrageDodge : CFG.dodgeChance;
   if (G.enemyState !== 'dazed' && Math.random() < dodge) {
     popup('MISS!', 'info', 50, 34);
+    if (G.enemyState === 'idle' && Math.random() < CFG.counterChance) {
+      G.timers.push(setTimeout(enemyWindup, 200)); // instant counter
+    }
     return;
   }
 
@@ -495,7 +501,7 @@ function scheduleAttack(quick = false) {
 }
 
 function enemyWindup() {
-  if (!G.running || G.enemyState === 'ko') return;
+  if (!G.running || G.enemyState === 'ko' || G.enemyState === 'windup' || G.enemyState === 'attack') return;
   G.enemyState = 'windup';
   setOppState('windup');
   Sound.warn();
@@ -526,12 +532,12 @@ function enemyAttack() {
       Sound.block();
       popup('BLOCKED! +' + CFG.pointsBlock, 'info', 50, 55);
       sparks(50, 62, '#8fe08f', 9);
-      // open for punishment after a blocked hit
+      // open for punishment after a blocked hit (shorter window when enraged)
       G.enemyState = 'dazed';
       setOppState('dazed');
       G.timers.push(setTimeout(() => {
         if (G.running && G.enemyState === 'dazed') { G.enemyState = 'idle'; setOppState('idle'); }
-      }, 1400));
+      }, G.enraged ? CFG.enrageDazedTime : CFG.dazedTime));
       scheduleAttack();
     } else {
       G.playerHP = Math.max(0, G.playerHP - 1);

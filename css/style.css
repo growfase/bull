@@ -537,17 +537,16 @@ img { max-width: 100%; display: block; }
 #endTitle.win  { color: var(--glow); text-shadow: 0 0 28px var(--glow-soft), 0 0 80px rgba(143,224,143,.5); }
 #endTitle.lose { color: var(--red); text-shadow: 0 0 28px rgba(255,89,100,.4); }
 
-/* ---------- Registro de score (tela final) ---------- */
-.register-box {
-  margin: 0 auto 22px; max-width: 340px;
-  display: flex; flex-direction: column; gap: 10px;
-}
+/* ---------- Registro de score ---------- */
+.end-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.rank-cta { text-align: center; margin-top: 26px; }
 .name-input {
   background: var(--panel2); color: var(--text);
   border: 1px solid var(--line); border-radius: 999px;
   padding: 12px 20px; font-family: var(--font-body);
   font-size: .95rem; text-align: center; outline: none;
   transition: border-color .2s;
+  width: 100%; margin-bottom: 18px;
 }
 .name-input:focus { border-color: rgba(185,220,174,.45); }
 .name-input::placeholder { color: var(--muted); }
@@ -561,10 +560,82 @@ img { max-width: 100%; display: block; }
   box-shadow: 0 0 40px rgba(123,111,240,.6), inset 0 1px 0 rgba(255,255,255,.35);
 }
 .btn-wallet:disabled { opacity: .55; cursor: not-allowed; }
-.deposit-note { font-size: .78rem; color: var(--muted); margin: 0 !important; font-family: monospace; }
-.reg-status { min-height: 1.2em; font-size: .85rem; color: var(--muted); margin: 0 !important; }
+.reg-status { min-height: 1.2em; font-size: .85rem; color: var(--muted); margin: 14px 0 0; text-align: center; }
 .reg-status.ok  { color: var(--glow); }
 .reg-status.err { color: var(--red); }
+
+/* ---------- Modal de registro ---------- */
+.modal {
+  position: fixed; inset: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(2, 4, 2, .78);
+  backdrop-filter: blur(5px);
+  padding: 20px;
+}
+.modal-card {
+  position: relative;
+  background: var(--panel); border: 1px solid var(--line);
+  border-radius: 24px; padding: 34px 32px 26px;
+  width: min(560px, 100%);
+  max-height: 92vh; overflow-y: auto;
+  box-shadow: 0 0 80px rgba(143,224,143,.12), 0 30px 80px rgba(0,0,0,.7);
+}
+.modal-close {
+  position: absolute; top: 16px; right: 18px;
+  background: none; border: none; cursor: pointer;
+  color: var(--muted); font-size: 1.1rem;
+  transition: color .2s;
+}
+.modal-close:hover { color: var(--text); }
+.modal-title {
+  font-weight: 800; font-size: 1.5rem; text-align: center;
+  margin-bottom: 20px;
+  text-shadow: 0 0 24px rgba(143,224,143,.2);
+}
+.reg-summary {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+  margin-bottom: 18px;
+}
+.reg-summary div {
+  background: var(--panel2); border: 1px solid var(--line);
+  border-radius: 14px; padding: 12px 8px; text-align: center;
+  display: flex; flex-direction: column; gap: 2px;
+}
+.reg-summary span { font-size: .68rem; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); }
+.reg-summary b { font-weight: 800; font-size: 1.15rem; color: var(--glow); text-shadow: 0 0 12px var(--glow-soft); }
+.pay-grid {
+  display: grid; grid-template-columns: auto 1fr; gap: 20px;
+  align-items: center;
+}
+.qr-box {
+  background: #fff; border-radius: 16px; padding: 12px 12px 6px;
+  text-align: center;
+  box-shadow: 0 0 30px rgba(143,224,143,.15);
+}
+.qr-box p { color: #333; font-size: .62rem; font-weight: 600; margin: 4px 0 2px; }
+.qr-box img, .qr-box canvas { display: block; margin: 0 auto; }
+.pay-info { display: flex; flex-direction: column; gap: 10px; }
+.pay-label { font-size: .68rem; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); }
+.pay-addr-row { display: flex; align-items: center; gap: 8px; }
+.pay-addr-row code {
+  flex: 1;
+  background: var(--panel2); border: 1px solid var(--line);
+  border-radius: 10px; padding: 9px 12px;
+  font-size: .85rem; color: var(--text);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.copy-btn {
+  background: var(--panel2); border: 1px solid var(--line);
+  border-radius: 10px; padding: 8px 11px; cursor: pointer;
+  color: var(--muted); font-size: .9rem;
+  transition: color .2s, border-color .2s;
+}
+.copy-btn:hover { color: var(--glow); border-color: rgba(185,220,174,.4); }
+.btn-verify { font-size: .9rem; padding: 12px 24px; }
+@media (max-width: 520px) {
+  .pay-grid { grid-template-columns: 1fr; justify-items: center; }
+  .pay-info { width: 100%; }
+}
 
 /* ---------- Ranking ---------- */
 .rank-section { padding: 80px 0 40px; }
