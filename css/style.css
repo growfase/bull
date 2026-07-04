@@ -477,6 +477,48 @@ img { max-width: 100%; display: block; }
   text-shadow: 0 0 14px var(--glow-soft), 0 2px 0 #000;
 }
 
+/* ---------- Poder GREEN CANDLE ---------- */
+.power-btn {
+  position: absolute; left: 3%; bottom: 16%;
+  width: 10.5%; aspect-ratio: 1;
+  border-radius: 50%; padding: .55cqw;
+  background: conic-gradient(var(--glow) calc(var(--p) * 1%), rgba(255,255,255,.09) 0);
+  pointer-events: auto; cursor: default;
+  transition: transform .15s;
+  z-index: 11;
+}
+.power-ico {
+  width: 100%; height: 100%; border-radius: 50%;
+  background: rgba(5, 8, 5, .92);
+  border: 1px solid var(--line);
+  display: flex; align-items: center; justify-content: center;
+}
+.power-ico svg { width: 34%; height: 72%; opacity: .55; transition: opacity .2s; }
+.power-btn.ready { cursor: pointer; animation: power-pulse .9s ease-in-out infinite; }
+.power-btn.ready .power-ico svg { opacity: 1; filter: drop-shadow(0 0 8px rgba(143,224,143,.9)); }
+.power-btn.ready:active { transform: scale(.92); }
+@keyframes power-pulse {
+  0%, 100% { filter: drop-shadow(0 0 6px rgba(143,224,143,.4)); transform: scale(1); }
+  50%      { filter: drop-shadow(0 0 20px rgba(143,224,143,.95)); transform: scale(1.07); }
+}
+
+.candle-strike {
+  position: absolute; left: 50%; bottom: 8%;
+  width: 15%; height: 74%;
+  z-index: 6; pointer-events: none;
+  transform-origin: bottom center;
+  filter: drop-shadow(0 0 26px rgba(126,240,126,.8));
+}
+.candle-strike svg { width: 100%; height: 100%; }
+.candle-strike.swing { animation: candle-swing .6s cubic-bezier(.45,.05,.55,1) forwards; }
+@keyframes candle-swing {
+  0%   { transform: translateX(220%) rotate(84deg); opacity: 1; }
+  45%  { transform: translateX(-50%) rotate(0deg); opacity: 1; }
+  58%  { transform: translateX(-50%) rotate(-8deg); }
+  72%  { transform: translateX(-50%) rotate(-2deg); opacity: 1; }
+  100% { transform: translateX(-52%) rotate(-4deg) translateY(-6%); opacity: 0; }
+}
+
 /* ---------- FX (popups, partículas) ---------- */
 .fx-layer { position: absolute; inset: 0; z-index: 12; pointer-events: none; overflow: hidden; }
 .pop {

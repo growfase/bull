@@ -107,6 +107,32 @@
             </div>
             <div class="score" id="score">0 <small>PTS</small></div>
             <div class="timer" id="timer">0.0s</div>
+            <div id="powerBtn" class="power-btn" style="--p:0" title="Green Candle — press E when charged">
+              <div class="power-ico">
+                <svg viewBox="0 0 80 240" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="36" y="4" width="8" height="42" rx="4" fill="#8fe08f"/>
+                  <rect x="36" y="194" width="8" height="40" rx="4" fill="#8fe08f"/>
+                  <rect x="12" y="42" width="56" height="156" rx="10" fill="#3fae5c" stroke="#8fe08f" stroke-width="4"/>
+                  <rect x="21" y="54" width="10" height="118" rx="5" fill="rgba(255,255,255,.35)"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- GREEN CANDLE strike -->
+          <div id="candleStrike" class="candle-strike hidden">
+            <svg viewBox="0 0 80 240" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="cndl" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#7ef07e"/>
+                  <stop offset="100%" stop-color="#2f9e4f"/>
+                </linearGradient>
+              </defs>
+              <rect x="36" y="4" width="8" height="42" rx="4" fill="#baf5ba"/>
+              <rect x="36" y="194" width="8" height="40" rx="4" fill="#baf5ba"/>
+              <rect x="12" y="42" width="56" height="156" rx="10" fill="url(#cndl)" stroke="#dcffdc" stroke-width="4"/>
+              <rect x="21" y="54" width="10" height="118" rx="5" fill="rgba(255,255,255,.4)"/>
+            </svg>
           </div>
 
           <!-- FX layer -->
@@ -127,6 +153,7 @@
               <ol class="tut-list">
                 <li><b>1.</b> CLICK the screen to PUNCH</li>
                 <li><b>2.</b> When he attacks, HOLD the <b>BLOCK</b> bar (or SPACE) to DEFEND</li>
+                <li><b>3.</b> Hits charge the <b>🕯️ GREEN CANDLE</b> — press <b>E</b> (or tap it) to SMASH</li>
               </ol>
               <button class="btn btn-primary" id="btnGo">OK, let's go</button>
             </div>

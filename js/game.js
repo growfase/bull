@@ -56,6 +56,12 @@ const CFG = {
   superAt: 0.2,
   superChargeTime: 850,      // ms of warning to get the block up
   superBonus: 1000,          // points for surviving it
+
+  // player — GREEN CANDLE power (charge by landing hits, then unleash)
+  powerMax: 12,              // hits to fully charge
+  powerPerBlock: 2,          // extra charge for a blocked attack
+  candleDamage: 6,           // HP the candle smash takes
+  candleBonus: 500,          // points for landing it
 };
 
 /* ============================================================
@@ -241,6 +247,8 @@ const hitFlash = $('hitFlash');
 const fxLayer = $('fxLayer');
 const scoreEl = $('score');
 const enemyFace = $('enemyFace');
+const powerBtn = $('powerBtn');
+const candleStrike = $('candleStrike');
 
 const G = {
   running: false,
@@ -250,6 +258,7 @@ const G = {
   blocking: false,
   enraged: false,
   superDone: false,
+  power: 0,
   lastPunch: 0,
   nextFist: 'L',
   enemyState: 'idle',   // idle | windup | attack | dazed | ko
@@ -397,6 +406,7 @@ function punch() {
     Sound.hit();
     updateHP();
     updateAvatar();
+    addPower(1);
     maybeEnrage();
     maybeSuper();
     setOppState(side === 'L' ? 'hitR' : 'hitL');
@@ -420,6 +430,61 @@ function maybeEnrage() {
   popup('SUPER RAGE!', 'bad', 50, 24);
   sparks(50, 30, '#ff5964', 12);
   Sound.enrage();
+}
+
+/* ---------------- GREEN CANDLE power ---------------- */
+function addPower(n) {
+  if (!G.running || G.power >= CFG.powerMax) return;
+  const was = G.power;
+  G.power = Math.min(CFG.powerMax, G.power + n);
+  updatePowerUI();
+  if (was < CFG.powerMax && G.power >= CFG.powerMax) {
+    popup('🕯️ CANDLE READY! (E)', 'good', 50, 62);
+    Sound.block();
+  }
+}
+function updatePowerUI() {
+  powerBtn.style.setProperty('--p', (G.power / CFG.powerMax * 100).toFixed(0));
+  powerBtn.classList.toggle('ready', G.power >= CFG.powerMax);
+}
+function activateCandle() {
+  if (!G.running || G.blocking || G.power < CFG.powerMax || G.enemyState === 'ko') return;
+  G.power = 0;
+  updatePowerUI();
+
+  candleStrike.classList.remove('hidden', 'swing');
+  void candleStrike.offsetWidth;
+  candleStrike.classList.add('swing');
+  Sound.whoosh();
+
+  setTimeout(() => {
+    if (!G.running) return;
+    G.enemyHP = Math.max(0, G.enemyHP - CFG.candleDamage);
+    addScore(CFG.candleBonus);
+    Sound.hit();
+    Sound.enrage();
+    shake();
+    updateHP();
+    updateAvatar();
+    popup('GREEN CANDLE! +' + CFG.candleBonus, 'good', 50, 32);
+    sparks(50, 40, '#7ef07e', 16);
+    sparks(50, 34, '#baf5ba', 10);
+
+    if (G.enemyHP <= 0) return ko(true);
+    maybeEnrage();
+    maybeSuper();
+
+    // the smash staggers him
+    if (G.enemyState !== 'windup' && G.enemyState !== 'attack') {
+      G.enemyState = 'dazed';
+      setOppState('dazed');
+      G.timers.push(setTimeout(() => {
+        if (G.running && G.enemyState === 'dazed') { G.enemyState = 'idle'; setOppState('idle'); }
+      }, 1200));
+    }
+  }, 300); // impact mid-swing
+
+  setTimeout(() => candleStrike.classList.add('hidden'), 700);
 }
 
 /* SUPER POWER — fires once at 20% HP. Block it or die instantly. */
@@ -529,6 +594,7 @@ function enemyAttack() {
 
     if (G.blocking) {
       addScore(CFG.pointsBlock);
+      addPower(CFG.powerPerBlock);
       Sound.block();
       popup('BLOCKED! +' + CFG.pointsBlock, 'info', 50, 55);
       sparks(50, 62, '#8fe08f', 9);
@@ -613,6 +679,10 @@ function resetGame() {
   G.blocking = false;
   G.enraged = false;
   G.superDone = false;
+  G.power = 0;
+  updatePowerUI();
+  candleStrike.classList.add('hidden');
+  candleStrike.classList.remove('swing');
   G.nextFist = 'L';
   G.enemyState = 'idle';
   G.timers.forEach(clearTimeout);
@@ -661,6 +731,11 @@ window.addEventListener('keydown', (e) => {
     e.preventDefault();
     startBlock();
   }
+  if (e.code === 'KeyE') activateCandle();
+});
+powerBtn.addEventListener('pointerdown', (e) => {
+  e.stopPropagation();
+  activateCandle();
 });
 window.addEventListener('keyup', (e) => {
   if (e.code === 'Space') stopBlock();
