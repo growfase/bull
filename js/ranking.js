@@ -21,6 +21,7 @@
   let lastTime = null;    // duration of the finished match
   let registered = false; // this match's score is already in
   let busy = false;
+  let walletAddr = null;  // connected wallet (optional, only for ranking)
 
   /* ---------------- helpers ---------------- */
   const short = (w) => w ? w.slice(0, 4) + '…' + w.slice(-4) : '?';
@@ -69,15 +70,38 @@
     }
     document.getElementById('sumScore').textContent = Number(lastScore).toLocaleString('en-US');
     document.getElementById('sumTime').textContent = lastTime != null ? lastTime.toFixed(1) + 's' : '0.0s';
+    btnConnect.textContent = walletAddr ? 'Register score' : 'Connect wallet and register';
     btnConnect.disabled = registered;
     setStatus(registered ? 'This score is already registered. 🏆' : '', registered ? 'ok' : '');
     modal.classList.remove('hidden');
   }
   function closeModal() { modal.classList.add('hidden'); }
 
-  /* ---------------- registration ---------------- */
+  /* ---------------- wallet ---------------- */
   function provider() {
     return window.phantom?.solana || (window.solana?.isPhantom ? window.solana : null);
+  }
+
+  const btnWallet = document.getElementById('btnWallet');
+  function updateWalletUI() {
+    btnWallet.textContent = walletAddr ? short(walletAddr) : 'Connect wallet';
+    btnWallet.classList.toggle('connected', !!walletAddr);
+    btnWallet.title = walletAddr || 'Connect your Solana wallet (only needed for the ranking)';
+  }
+
+  async function connectWallet(interactive = true) {
+    if (walletAddr) return walletAddr;
+    const ph = provider();
+    if (!ph) {
+      if (interactive) window.open('https://phantom.app/', '_blank');
+      return null;
+    }
+    try {
+      const resp = await ph.connect(interactive ? undefined : { onlyIfTrusted: true });
+      walletAddr = resp.publicKey.toBase58 ? resp.publicKey.toBase58() : String(resp.publicKey);
+      updateWalletUI();
+      return walletAddr;
+    } catch { return null; }
   }
 
   async function register() {
@@ -93,8 +117,8 @@
     btnConnect.disabled = true;
     try {
       setStatus('Connecting wallet…');
-      const resp = await ph.connect();
-      const wallet = resp.publicKey.toBase58 ? resp.publicKey.toBase58() : String(resp.publicKey);
+      const wallet = await connectWallet(true);
+      if (!wallet) throw new Error('Wallet connection cancelled.');
 
       setStatus('Sign the message in Phantom to confirm…');
       const ts = Date.now();
@@ -147,6 +171,9 @@
   modal.addEventListener('pointerdown', (e) => { if (e.target === modal) closeModal(); });
   window.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
   btnConnect.addEventListener('click', register);
+  btnWallet.addEventListener('click', () => connectWallet(true));
 
+  updateWalletUI();
+  connectWallet(false); // restore a previously trusted session silently
   loadBoard();
 })();

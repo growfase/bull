@@ -744,8 +744,8 @@ function ko(playerWon) {
     t.textContent = playerWon ? 'KNOCKOUT!' : 'YOU GOT BEAT...';
     t.className = playerWon ? 'win' : 'lose';
     m.textContent = playerWon
-      ? 'The alley is yours. The Bull will think twice.'
-      : 'The Bull won this one. Get up and try again!';
+      ? 'Ansem is down! The damn airdrop is finally coming.'
+      : 'Ansem keeps the airdrop. Get up and try again!';
     $('endScore').textContent = G.score;
     $('endTime').textContent = G.finalTime.toFixed(1) + 's';
     $('screenEnd').classList.remove('hidden');

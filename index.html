@@ -22,6 +22,7 @@
         <a href="#como-jogar">How to play</a>
         <a href="#sobre">About</a>
       </nav>
+      <button class="wallet-chip" id="btnWallet">Connect wallet</button>
     </div>
   </header>
 
@@ -33,8 +34,9 @@
       <p class="hero-topline">THE BULL MARKET IS HERE · SOLANA</p>
       <h1 class="hero-title"><em>BULLFUN</em></h1>
       <p class="hero-tagline">PUT THE HORNS ON.</p>
-      <p class="hero-sub">The Bull is guarding the alley and there's only one way through:
-        <strong>your fists</strong>. Click to punch, hold to block and send him to the ground.</p>
+      <p class="hero-sub"><strong>Ansem</strong> is guarding the alley and holding the airdrop hostage.
+        Beat him down so we can finally get the <strong>damn airdrop</strong> we've all been
+        waiting for. Click to punch, hold to block.</p>
 
       <!-- ===================== GAME ===================== -->
       <div class="hero-game" id="jogo">
@@ -87,6 +89,7 @@
               <div class="hp-tag">YOU</div>
             </div>
             <div class="hp hp-enemy">
+              <div class="hp-tag hp-tag-enemy">ANSEM</div>
               <div class="hp-bar" id="hpEnemy"></div>
               <div class="hp-face" id="enemyFace" data-asset="enemyAvatar"></div>
             </div>
@@ -117,7 +120,7 @@
           <div id="screenIntro" class="screen">
             <div class="screen-card">
               <h3 class="brawl-logo"><span>BULLFUN</span></h3>
-              <p>The alley is his. Or it was. <b>Put the horns on.</b></p>
+              <p>He's got the airdrop. You've got fists. <b>Put the horns on.</b></p>
               <button class="btn btn-primary" id="btnStart">Fight</button>
             </div>
           </div>
@@ -153,8 +156,8 @@
 
       <div class="hero-stats">
         <div><b>+250</b><span>pts per punch</span></div>
-        <div><b>1</b><span>furious bull</span></div>
-        <div><b>0</b><span>mercy</span></div>
+        <div><b>1</b><span>Ansem to beat</span></div>
+        <div><b>0</b><span>airdrops received</span></div>
       </div>
     </div>
   </section>
@@ -163,8 +166,8 @@
   <section class="rank-section" id="ranking">
     <div class="container">
       <h2 class="section-title">Ranking</h2>
-      <p class="rank-sub">The toughest fists in the alley. Connect your
-        <b>Solana wallet</b> to register your score and claim your spot.</p>
+      <p class="rank-sub">Playing is free, no wallet needed. But if you want your score
+        on the board, connect your <b>Solana wallet</b> and claim your spot.</p>
       <div class="rank-board">
         <table class="rank-table">
           <thead>
@@ -196,7 +199,7 @@
       <input id="playerName" class="name-input" type="text" maxlength="20" placeholder="Your name on the ranking (optional)">
 
       <button class="btn btn-wallet btn-block" id="btnConnect">Connect wallet and register</button>
-      <p class="rank-note">You'll sign a free message with your wallet. No payment, no transaction.</p>
+      <p class="rank-note">Playing is always free. Connecting your wallet just puts your score on the board: you sign a free message, no payment, no transaction.</p>
 
       <p class="reg-status" id="regStatus"></p>
     </div>
@@ -210,7 +213,7 @@
         <div class="card">
           <div class="card-ico">👊</div>
           <h3>Punch</h3>
-          <p>Click anywhere on the screen to throw a punch. Every hit is worth <b>+250 pts</b> and drains the Bull's health.</p>
+          <p>Click anywhere on the screen to throw a punch. Every hit is worth <b>+250 pts</b> and drains Ansem's health.</p>
         </div>
         <div class="card">
           <div class="card-ico">🛡️</div>
@@ -220,7 +223,7 @@
         <div class="card">
           <div class="card-ico">💀</div>
           <h3>Knock out</h3>
-          <p>Empty the red bar before he empties yours. Send the Bull to the ground and own the alley.</p>
+          <p>Empty the red bar before he empties yours. Drop Ansem to the ground and unlock the damn airdrop.</p>
         </div>
       </div>
     </div>
@@ -230,9 +233,11 @@
   <section class="about-section" id="sobre">
     <div class="container about-inner">
       <h2 class="section-title">About the game</h2>
-      <p>BULLFUN is a tribute to the classic first-person brawlers from the golden
-      age of Flash — now with the horns on. No downloads, no sign-up: open it, punch.
-      Works on desktop and mobile.</p>
+      <p>BULLFUN is a tribute to the classic first-person brawlers from the golden age
+      of Flash. Ansem has been gatekeeping the airdrop we've all been waiting for, so
+      put the horns on, walk into the alley and take it back. Free to play, no sign-up,
+      works on desktop and mobile. Your score only counts for the ranking if you
+      connect your Solana wallet.</p>
     </div>
   </section>
 
