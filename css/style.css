@@ -59,7 +59,7 @@ img { max-width: 100%; display: block; }
 /* ===================== HERO ===================== */
 .hero {
   position: relative; text-align: center;
-  padding: 96px 0 90px;
+  padding: 56px 0 70px;
   background:
     radial-gradient(ellipse 70% 55% at 50% 8%, rgba(143,224,143,.10), transparent 65%),
     linear-gradient(180deg, var(--bg2), var(--bg));
@@ -107,11 +107,11 @@ img { max-width: 100%; display: block; }
   font-size: clamp(.9rem, 2.4vw, 1.25rem);
 }
 .hero-sub {
-  max-width: 580px; margin: 22px auto 34px;
+  max-width: 580px; margin: 22px auto 0;
   color: var(--muted); font-size: 1.02rem; line-height: 1.7;
 }
 .hero-sub strong { color: var(--text); }
-.hero-cta { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+.hero-game { margin-top: 42px; }
 
 .btn {
   display: inline-block; cursor: pointer; text-decoration: none;
@@ -138,7 +138,7 @@ img { max-width: 100%; display: block; }
 .btn-ghost:hover { border-color: rgba(185,220,174,.4); box-shadow: 0 0 20px rgba(143,224,143,.12); }
 
 .hero-stats {
-  display: flex; gap: 44px; justify-content: center; margin-top: 52px; flex-wrap: wrap;
+  display: flex; gap: 44px; justify-content: center; margin-top: 46px; flex-wrap: wrap;
 }
 .hero-stats div { display: flex; flex-direction: column; }
 .hero-stats b {
@@ -154,7 +154,6 @@ img { max-width: 100%; display: block; }
   text-align: center; margin-bottom: 36px;
   text-shadow: 0 0 30px rgba(143,224,143,.15);
 }
-.game-section { padding: 80px 0 40px; }
 .how-section { padding: 80px 0; }
 .about-section { padding: 40px 0 90px; }
 .about-inner { max-width: 680px; text-align: center; }
