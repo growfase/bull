@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BULLFUN — Put The Horns On</title>
+  <title>BULLFUN</title>
   <meta name="description" content="Put the horns on and face the Bull in the alley! First-person brawler: punch, block and knock him out.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -92,7 +92,7 @@
 
           <!-- Block zone -->
           <div id="blockZone" class="block-zone" title="Hold to block">
-            <span>BLOCK — hold here (or SPACE)</span>
+            <span>BLOCK (hold here or press SPACE)</span>
           </div>
 
           <!-- HUD -->
@@ -119,20 +119,9 @@
             </div>
           </div>
 
-          <!-- GREEN CANDLE strike -->
-          <div id="candleStrike" class="candle-strike hidden">
-            <svg viewBox="0 0 80 240" xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                <linearGradient id="cndl" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="#7ef07e"/>
-                  <stop offset="100%" stop-color="#2f9e4f"/>
-                </linearGradient>
-              </defs>
-              <rect x="36" y="4" width="8" height="42" rx="4" fill="#baf5ba"/>
-              <rect x="36" y="194" width="8" height="40" rx="4" fill="#baf5ba"/>
-              <rect x="12" y="42" width="56" height="156" rx="10" fill="url(#cndl)" stroke="#dcffdc" stroke-width="4"/>
-              <rect x="21" y="54" width="10" height="118" rx="5" fill="rgba(255,255,255,.4)"/>
-            </svg>
+          <!-- GREEN CANDLE combo fist -->
+          <div id="candleFist" class="candle-fist hidden">
+            <img src="assets/candle-fist.png" alt="">
           </div>
 
           <!-- FX layer -->
@@ -165,7 +154,7 @@
               <p id="endMsg">You cleared the alley.</p>
               <p class="end-score">SCORE: <b id="endScore">0</b> · TIME: <b id="endTime">0.0s</b></p>
               <div class="end-actions">
-                <button class="btn btn-wallet" id="btnRegister">🏆 Register score · 0.1 SOL</button>
+                <button class="btn btn-wallet" id="btnRegister">🏆 Register score</button>
                 <button class="btn btn-primary" id="btnRestart">Fight again</button>
               </div>
             </div>
@@ -181,8 +170,8 @@
   <section class="rank-section" id="ranking">
     <div class="container">
       <h2 class="section-title">Ranking</h2>
-      <p class="rank-sub">The toughest fists in the alley. Register your score for
-        <b>0.1 SOL</b> with your Solana wallet and claim your spot.</p>
+      <p class="rank-sub">The toughest fists in the alley. Connect your
+        <b>Solana wallet</b> to register your score and claim your spot.</p>
       <div class="rank-board">
         <table class="rank-table">
           <thead>
@@ -193,7 +182,7 @@
           </tbody>
         </table>
       </div>
-      <p class="rank-note">Payments are verified on-chain. Each transaction registers one score.</p>
+      <p class="rank-note">You sign a free message with your wallet to prove it's yours. One spot per wallet, best score counts.</p>
       <div class="rank-cta">
         <button class="btn btn-wallet" id="btnRegister2">🏆 Register my score</button>
       </div>
@@ -208,27 +197,13 @@
 
       <div class="reg-summary">
         <div><span>Score</span><b id="sumScore">0</b></div>
-        <div><span>Time</span><b id="sumTime">—</b></div>
-        <div><span>Fee</span><b id="sumFee">0.1 SOL</b></div>
+        <div><span>Time</span><b id="sumTime">0.0s</b></div>
       </div>
 
       <input id="playerName" class="name-input" type="text" maxlength="20" placeholder="Your name on the ranking (optional)">
 
-      <div class="pay-grid">
-        <div class="qr-box">
-          <div id="qrCode"></div>
-          <p>Scan with any Solana wallet</p>
-        </div>
-        <div class="pay-info">
-          <p class="pay-label">Deposit wallet</p>
-          <div class="pay-addr-row">
-            <code id="payAddr">—</code>
-            <button class="copy-btn" id="btnCopyAddr" title="Copy address">⧉</button>
-          </div>
-          <button class="btn btn-wallet" id="btnPhantom">Pay with Phantom</button>
-          <button class="btn btn-ghost btn-verify" id="btnVerify">I've paid — verify</button>
-        </div>
-      </div>
+      <button class="btn btn-wallet btn-block" id="btnConnect">Connect wallet and register</button>
+      <p class="rank-note">You'll sign a free message with your wallet. No payment, no transaction.</p>
 
       <p class="reg-status" id="regStatus"></p>
     </div>
@@ -271,12 +246,10 @@
   <footer class="site-footer">
     <div class="container">
       <span class="logo logo-sm"><span>BULLFUN</span></span>
-      <span>© 2026 — Put the horns on. 🤘</span>
+      <span>© 2026 BULLFUN · Put the horns on. 🤘</span>
     </div>
   </footer>
 
-  <script src="https://unpkg.com/@solana/web3.js@1.98.0/lib/index.iife.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script src="js/game.js"></script>
   <script src="js/ranking.js"></script>
 </body>

@@ -502,22 +502,28 @@ img { max-width: 100%; display: block; }
   50%      { filter: drop-shadow(0 0 20px rgba(143,224,143,.95)); transform: scale(1.07); }
 }
 
-.candle-strike {
-  position: absolute; left: 50%; bottom: 8%;
-  width: 15%; height: 74%;
-  z-index: 6; pointer-events: none;
-  transform-origin: bottom center;
-  filter: drop-shadow(0 0 26px rgba(126,240,126,.8));
+/* mão com a candle: entra no centro e desfere socos rápidos */
+.candle-fist {
+  position: absolute; left: 50%; bottom: -8%;
+  width: 30%; aspect-ratio: 2 / 3;
+  transform: translateX(-50%);
+  z-index: 7; pointer-events: none;
+  filter: drop-shadow(0 0 22px rgba(126,240,126,.55)) drop-shadow(0 8px 16px rgba(0,0,0,.5));
+  animation: candle-in .16s ease-out;
 }
-.candle-strike svg { width: 100%; height: 100%; }
-.candle-strike.swing { animation: candle-swing .6s cubic-bezier(.45,.05,.55,1) forwards; }
-@keyframes candle-swing {
-  0%   { transform: translateX(220%) rotate(84deg); opacity: 1; }
-  45%  { transform: translateX(-50%) rotate(0deg); opacity: 1; }
-  58%  { transform: translateX(-50%) rotate(-8deg); }
-  72%  { transform: translateX(-50%) rotate(-2deg); opacity: 1; }
-  100% { transform: translateX(-52%) rotate(-4deg) translateY(-6%); opacity: 0; }
+.candle-fist img { width: 100%; height: 100%; object-fit: contain; object-position: center bottom; }
+@keyframes candle-in {
+  from { transform: translateX(-50%) translateY(60%); }
+  to   { transform: translateX(-50%); }
 }
+.candle-fist.jabbing { animation: candle-jab .18s ease-out; }
+@keyframes candle-jab {
+  0%   { transform: translateX(-50%); }
+  50%  { transform: translateX(-50%) translateY(-105%) scale(.7) rotate(4deg); }
+  100% { transform: translateX(-50%); }
+}
+/* durante o combo, os punhos normais somem */
+.stage.candling .fist { opacity: 0; }
 
 /* ---------- FX (popups, partículas) ---------- */
 .fx-layer { position: absolute; inset: 0; z-index: 12; pointer-events: none; overflow: hidden; }
@@ -635,7 +641,7 @@ img { max-width: 100%; display: block; }
   text-shadow: 0 0 24px rgba(143,224,143,.2);
 }
 .reg-summary {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
   margin-bottom: 18px;
 }
 .reg-summary div {
@@ -645,39 +651,8 @@ img { max-width: 100%; display: block; }
 }
 .reg-summary span { font-size: .68rem; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); }
 .reg-summary b { font-weight: 800; font-size: 1.15rem; color: var(--glow); text-shadow: 0 0 12px var(--glow-soft); }
-.pay-grid {
-  display: grid; grid-template-columns: auto 1fr; gap: 20px;
-  align-items: center;
-}
-.qr-box {
-  background: #fff; border-radius: 16px; padding: 12px 12px 6px;
-  text-align: center;
-  box-shadow: 0 0 30px rgba(143,224,143,.15);
-}
-.qr-box p { color: #333; font-size: .62rem; font-weight: 600; margin: 4px 0 2px; }
-.qr-box img, .qr-box canvas { display: block; margin: 0 auto; }
-.pay-info { display: flex; flex-direction: column; gap: 10px; }
-.pay-label { font-size: .68rem; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); }
-.pay-addr-row { display: flex; align-items: center; gap: 8px; }
-.pay-addr-row code {
-  flex: 1;
-  background: var(--panel2); border: 1px solid var(--line);
-  border-radius: 10px; padding: 9px 12px;
-  font-size: .85rem; color: var(--text);
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-}
-.copy-btn {
-  background: var(--panel2); border: 1px solid var(--line);
-  border-radius: 10px; padding: 8px 11px; cursor: pointer;
-  color: var(--muted); font-size: .9rem;
-  transition: color .2s, border-color .2s;
-}
-.copy-btn:hover { color: var(--glow); border-color: rgba(185,220,174,.4); }
-.btn-verify { font-size: .9rem; padding: 12px 24px; }
-@media (max-width: 520px) {
-  .pay-grid { grid-template-columns: 1fr; justify-items: center; }
-  .pay-info { width: 100%; }
-}
+.btn-block { width: 100%; }
+.modal-card .rank-note { margin-top: 12px; }
 
 /* ---------- Ranking ---------- */
 .rank-section { padding: 80px 0 40px; }

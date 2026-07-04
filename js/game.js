@@ -60,8 +60,10 @@ const CFG = {
   // player — GREEN CANDLE power (charge by landing hits, then unleash)
   powerMax: 12,              // hits to fully charge
   powerPerBlock: 2,          // extra charge for a blocked attack
-  candleDamage: 6,           // HP the candle smash takes
-  candleBonus: 500,          // points for landing it
+  candleHits: 6,             // rapid candle punches in the combo
+  candleHitDamage: 1,        // HP per candle punch
+  candleHitPoints: 100,      // points per candle punch
+  candleHitGap: 190,         // ms between combo punches
 };
 
 /* ============================================================
@@ -248,7 +250,7 @@ const fxLayer = $('fxLayer');
 const scoreEl = $('score');
 const enemyFace = $('enemyFace');
 const powerBtn = $('powerBtn');
-const candleStrike = $('candleStrike');
+const candleFist = $('candleFist');
 
 const G = {
   running: false,
@@ -259,6 +261,7 @@ const G = {
   enraged: false,
   superDone: false,
   power: 0,
+  candling: false,
   lastPunch: 0,
   nextFist: 'L',
   enemyState: 'idle',   // idle | windup | attack | dazed | ko
@@ -375,7 +378,7 @@ function setOppState(cls) {
    ============================================================ */
 function punch() {
   const now = performance.now();
-  if (!G.running || G.blocking || now - G.lastPunch < CFG.punchCooldown) return;
+  if (!G.running || G.blocking || G.candling || now - G.lastPunch < CFG.punchCooldown) return;
   G.lastPunch = now;
 
   const side = G.nextFist;
@@ -448,43 +451,63 @@ function updatePowerUI() {
   powerBtn.classList.toggle('ready', G.power >= CFG.powerMax);
 }
 function activateCandle() {
-  if (!G.running || G.blocking || G.power < CFG.powerMax || G.enemyState === 'ko') return;
+  if (!G.running || G.blocking || G.candling || G.power < CFG.powerMax || G.enemyState === 'ko') return;
   G.power = 0;
+  G.candling = true;
   updatePowerUI();
 
-  candleStrike.classList.remove('hidden', 'swing');
-  void candleStrike.offsetWidth;
-  candleStrike.classList.add('swing');
-  Sound.whoosh();
+  // candle fist takes over the screen; normal fists hide
+  stage.classList.add('candling');
+  candleFist.classList.remove('hidden');
+  popup('GREEN CANDLE!', 'good', 50, 60);
 
-  setTimeout(() => {
-    if (!G.running) return;
-    G.enemyHP = Math.max(0, G.enemyHP - CFG.candleDamage);
-    addScore(CFG.candleBonus);
-    Sound.hit();
-    Sound.enrage();
-    shake();
-    updateHP();
-    updateAvatar();
-    popup('GREEN CANDLE! +' + CFG.candleBonus, 'good', 50, 32);
-    sparks(50, 40, '#7ef07e', 16);
-    sparks(50, 34, '#baf5ba', 10);
+  let hit = 0;
+  const jab = () => {
+    if (!G.running || G.enemyHP <= 0) return endCombo();
+    hit++;
+    candleFist.classList.remove('jabbing');
+    void candleFist.offsetWidth;
+    candleFist.classList.add('jabbing');
+    Sound.punch();
 
-    if (G.enemyHP <= 0) return ko(true);
-    maybeEnrage();
-    maybeSuper();
+    setTimeout(() => {
+      if (!G.running) return;
+      G.enemyHP = Math.max(0, G.enemyHP - CFG.candleHitDamage);
+      addScore(CFG.candleHitPoints);
+      Sound.hit();
+      updateHP();
+      updateAvatar();
+      setOppState(hit % 2 ? 'hitL' : 'hitR');
+      popup('+' + CFG.candleHitPoints, 'good', 42 + Math.random() * 16, 28 + Math.random() * 12);
+      sparks(50, 38, '#7ef07e', 8);
 
-    // the smash staggers him
-    if (G.enemyState !== 'windup' && G.enemyState !== 'attack') {
-      G.enemyState = 'dazed';
-      setOppState('dazed');
-      G.timers.push(setTimeout(() => {
-        if (G.running && G.enemyState === 'dazed') { G.enemyState = 'idle'; setOppState('idle'); }
-      }, 1200));
-    }
-  }, 300); // impact mid-swing
+      if (G.enemyHP <= 0) { endCombo(); return ko(true); }
+      if (hit >= CFG.candleHits) {
+        endCombo();
+        maybeEnrage();
+        maybeSuper();
+        // the beating staggers him
+        if (G.enemyState !== 'windup' && G.enemyState !== 'attack') {
+          G.enemyState = 'dazed';
+          setOppState('dazed');
+          G.timers.push(setTimeout(() => {
+            if (G.running && G.enemyState === 'dazed') { G.enemyState = 'idle'; setOppState('idle'); }
+          }, 1200));
+        }
+      } else {
+        G.timers.push(setTimeout(jab, CFG.candleHitGap - 90));
+      }
+    }, 90); // impact mid-jab
+  };
 
-  setTimeout(() => candleStrike.classList.add('hidden'), 700);
+  const endCombo = () => {
+    G.candling = false;
+    stage.classList.remove('candling');
+    candleFist.classList.add('hidden');
+    candleFist.classList.remove('jabbing');
+  };
+
+  jab();
 }
 
 /* SUPER POWER — fires once at 20% HP. Block it or die instantly. */
@@ -680,9 +703,11 @@ function resetGame() {
   G.enraged = false;
   G.superDone = false;
   G.power = 0;
+  G.candling = false;
   updatePowerUI();
-  candleStrike.classList.add('hidden');
-  candleStrike.classList.remove('swing');
+  stage.classList.remove('candling');
+  candleFist.classList.add('hidden');
+  candleFist.classList.remove('jabbing');
   G.nextFist = 'L';
   G.enemyState = 'idle';
   G.timers.forEach(clearTimeout);
