@@ -28,7 +28,7 @@ const HEADS = {
 /* ---------------- Game tuning ---------------- */
 const CFG = {
   playerHP: 10,
-  enemyHP: 40,
+  enemyHP: 55,
   pointsHit: 250,
   pointsBlock: 500,
   pointsHurt: -250,
@@ -56,6 +56,10 @@ const CFG = {
   superAt: 0.2,
   superChargeTime: 850,      // ms of warning to get the block up
   superBonus: 1000,          // points for surviving it
+
+  // player — combo stun: land N punches in a row to stun the boss
+  comboStun: 10,             // consecutive hits to stun
+  stunTime: 2200,            // ms he stays stunned (stars spinning)
 
   // player — GREEN CANDLE power (charge by landing hits, then unleash)
   powerMax: 12,              // hits to fully charge
@@ -262,6 +266,7 @@ const G = {
   superDone: false,
   power: 0,
   candling: false,
+  combo: 0,
   lastPunch: 0,
   nextFist: 'L',
   enemyState: 'idle',   // idle | windup | attack | dazed | ko
@@ -273,6 +278,7 @@ let timerIv = null;
 
 /* ---------------- Assets / placeholders ---------------- */
 let oppHead = null;
+let stunStars = null;
 
 function applyAssets() {
   document.querySelectorAll('[data-asset]').forEach(el => {
@@ -290,6 +296,12 @@ function applyAssets() {
     oppHead.alt = '';
     opponent.appendChild(oppHead);
   }
+  // estrelas amarelas do atordoamento (giram sobre a cabeça)
+  stunStars = document.createElement('div');
+  stunStars.className = 'stun-stars hidden';
+  stunStars.innerHTML = '<div class="stars-ring"><span>★</span><span>★</span><span>★</span></div>';
+  opponent.appendChild(stunStars);
+
   if (!ASSETS.enemyFist) enemyFist.querySelector('.sprite').innerHTML = SVGS.enemyFist;
   if (!ASSETS.blockArms) blockArms.querySelector('.sprite').innerHTML = SVGS.blockArms;
   if (!ASSETS.fistLeft)  fistL.querySelector('.sprite').innerHTML = SVGS.fist;
@@ -396,6 +408,7 @@ function punch() {
   const dodge = G.enraged ? CFG.enrageDodge : CFG.dodgeChance;
   if (G.enemyState !== 'dazed' && Math.random() < dodge) {
     popup('MISS!', 'info', 50, 34);
+    resetCombo();
     if (G.enemyState === 'idle' && Math.random() < CFG.counterChance) {
       G.timers.push(setTimeout(enemyWindup, 200)); // instant counter
     }
@@ -410,6 +423,7 @@ function punch() {
     updateHP();
     updateAvatar();
     addPower(1);
+    addCombo();
     maybeEnrage();
     maybeSuper();
     setOppState(side === 'L' ? 'hitR' : 'hitL');
@@ -433,6 +447,49 @@ function maybeEnrage() {
   popup('SUPER RAGE!', 'bad', 50, 24);
   sparks(50, 30, '#ff5964', 12);
   Sound.enrage();
+}
+
+/* ---------------- Combo & stun ---------------- */
+function updateComboUI() {
+  const el = $('combo');
+  el.textContent = 'COMBO x' + G.combo;
+  el.classList.toggle('show', G.combo >= 3);
+  el.classList.toggle('hot', G.combo >= 7);
+}
+function addCombo() {
+  G.combo++;
+  updateComboUI();
+  if (G.combo >= CFG.comboStun) stunBoss();
+}
+function resetCombo() {
+  G.combo = 0;
+  updateComboUI();
+}
+
+/* 10 socos seguidos: boss atordoado com estrelas amarelas girando */
+function stunBoss() {
+  if (stage.classList.contains('super-charge') || G.enemyState === 'ko') return;
+  resetCombo();
+
+  // interrompe qualquer ataque em andamento
+  G.timers.forEach(clearTimeout);
+  G.timers = [];
+  enemyFist.classList.add('hidden');
+  enemyFist.classList.remove('flying', 'super');
+
+  G.enemyState = 'dazed';
+  setOppState('dazed');
+  stunStars.classList.remove('hidden');
+  popup('STUNNED!', 'warn', 50, 24);
+  sparks(50, 26, '#ffd94a', 10);
+  Sound.block();
+  Sound.warn();
+
+  G.timers.push(setTimeout(() => {
+    stunStars.classList.add('hidden');
+    if (G.running && G.enemyState === 'dazed') { G.enemyState = 'idle'; setOppState('idle'); }
+    scheduleAttack();
+  }, CFG.stunTime));
 }
 
 /* ---------------- GREEN CANDLE power ---------------- */
@@ -631,6 +688,7 @@ function enemyAttack() {
     } else {
       G.playerHP = Math.max(0, G.playerHP - 1);
       addScore(CFG.pointsHurt);
+      resetCombo();
       Sound.hit();
       flash();
       shake();
@@ -667,6 +725,7 @@ function ko(playerWon) {
   G.timers = [];
   stopBlock();
   stopTimer();
+  if (stunStars) stunStars.classList.add('hidden');
 
   if (playerWon) {
     G.enemyState = 'ko';
@@ -704,7 +763,10 @@ function resetGame() {
   G.superDone = false;
   G.power = 0;
   G.candling = false;
+  G.combo = 0;
   updatePowerUI();
+  updateComboUI();
+  if (stunStars) stunStars.classList.add('hidden');
   stage.classList.remove('candling');
   candleFist.classList.add('hidden');
   candleFist.classList.remove('jabbing');

@@ -438,6 +438,7 @@ img { max-width: 100%; display: block; }
 .hp-player { left: 4%; }
 .hp-enemy  { right: 4%; }
 .hp-bar { flex: 1; display: flex; flex-direction: column-reverse; gap: 3px; }
+.hp-enemy .hp-bar { gap: 1px; } /* 55 segmentos precisam de menos espaço */
 .hp-seg { flex: 1; border-radius: 2px; transition: opacity .2s, background .2s; }
 .hp-player .hp-seg { background: var(--glow); box-shadow: 0 0 8px rgba(143,224,143,.7); }
 .hp-enemy  .hp-seg { background: var(--red); box-shadow: 0 0 8px rgba(255,89,100,.7); }
@@ -476,6 +477,41 @@ img { max-width: 100%; display: block; }
   color: var(--glow);
   text-shadow: 0 0 14px var(--glow-soft), 0 2px 0 #000;
 }
+
+.combo {
+  position: absolute; top: 10.5%; right: 3.5%;
+  font-weight: 800; letter-spacing: 1px;
+  font-size: clamp(.7rem, 2.2cqw, 1.1rem);
+  color: var(--glow);
+  text-shadow: 0 0 12px var(--glow-soft), 0 2px 0 #000;
+  opacity: 0; transform: translateY(-4px);
+  transition: opacity .15s, transform .15s, color .15s;
+}
+.combo.show { opacity: 1; transform: translateY(0); }
+.combo.hot { color: #ffd94a; text-shadow: 0 0 14px rgba(255,217,74,.8), 0 2px 0 #000; }
+
+/* ---------- Estrelas de atordoamento ---------- */
+.stun-stars {
+  position: absolute; top: -10%; left: 50%;
+  width: 70%; aspect-ratio: 1;
+  transform: translateX(-50%) scaleY(.38);
+  z-index: 5; pointer-events: none;
+}
+.stars-ring {
+  position: relative; width: 100%; height: 100%;
+  animation: stars-spin 1.1s linear infinite;
+}
+.stars-ring span {
+  position: absolute;
+  font-size: clamp(1rem, 4.2cqw, 2rem);
+  color: #ffd94a;
+  text-shadow: 0 0 10px rgba(255,217,74,.95), 0 0 30px rgba(255,217,74,.5);
+  transform: scaleY(2.6);
+}
+.stars-ring span:nth-child(1) { top: -6%; left: 47%; }
+.stars-ring span:nth-child(2) { bottom: 14%; left: 4%; }
+.stars-ring span:nth-child(3) { bottom: 14%; right: 4%; }
+@keyframes stars-spin { to { transform: rotate(360deg); } }
 
 /* ---------- Poder GREEN CANDLE ---------- */
 .power-btn {
@@ -537,6 +573,7 @@ img { max-width: 100%; display: block; }
 .pop.good { color: #b6f0a8; }
 .pop.bad  { color: var(--red); }
 .pop.info { color: #dcf5d6; }
+.pop.warn { color: #ffd94a; }
 @keyframes pop-rise {
   0%   { opacity: 0; transform: translate(-50%, -50%) scale(.4); }
   15%  { opacity: 1; transform: translate(-50%, -60%) scale(1.15); }
