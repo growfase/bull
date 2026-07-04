@@ -711,6 +711,33 @@ img { max-width: 100%; display: block; }
 .reg-summary b { font-weight: 800; font-size: 1.15rem; color: var(--glow); text-shadow: 0 0 12px var(--glow-soft); }
 .btn-block { width: 100%; }
 .modal-card .rank-note { margin-top: 12px; }
+.modal-sm { max-width: 420px; text-align: center; }
+.wallet-addr-box {
+  background: var(--panel2); border: 1px solid var(--line);
+  border-radius: 12px; padding: 12px 16px; margin-bottom: 14px;
+}
+.wallet-addr-box code {
+  color: var(--glow); font-size: .82rem; word-break: break-all;
+}
+
+/* ---------- Cabeças decorativas soltas pela página ---------- */
+.float-head {
+  position: absolute;
+  width: clamp(70px, 10vw, 140px);
+  opacity: .45;
+  pointer-events: none;
+  filter: drop-shadow(0 0 26px rgba(143,224,143,.35));
+  animation: head-bob 7s ease-in-out infinite;
+  z-index: 0;
+}
+.fh-1 { top: 9%; right: 5%; transform: rotate(12deg); }
+.fh-2 { top: 24%; left: 3%; transform: rotate(-10deg); animation-delay: -2.5s; }
+.fh-3 { top: 8%; right: 7%; transform: rotate(8deg); animation-delay: -5s; }
+@keyframes head-bob {
+  0%, 100% { translate: 0 0; }
+  50%      { translate: 0 -16px; }
+}
+.rank-section, .about-section { position: relative; overflow: hidden; }
 
 /* confirmação de registro */
 .reg-success { text-align: center; }

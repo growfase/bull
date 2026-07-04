@@ -28,6 +28,7 @@
 
   <!-- ===================== HERO ===================== -->
   <section class="hero" id="top">
+    <img class="float-head fh-1" src="assets/head-angry.png" alt="">
     <div class="hero-glow"></div>
     <div class="container hero-inner">
       <p class="hero-kicker"><i class="dot"></i> $BULLFUN IS LIVE ON PUMP.FUN</p>
@@ -164,6 +165,7 @@
 
   <!-- ===================== RANKING ===================== -->
   <section class="rank-section" id="ranking">
+    <img class="float-head fh-2" src="assets/head-dazed.png" alt="">
     <div class="container">
       <h2 class="section-title">Ranking</h2>
       <p class="rank-sub">Fastest to drop Ansem tops the board. Playing is free, no wallet
@@ -184,6 +186,22 @@
       </div>
     </div>
   </section>
+
+  <!-- ===================== WALLET MODAL ===================== -->
+  <div id="walletModal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-card modal-sm">
+      <button class="modal-close" id="walletModalClose" aria-label="Close">✕</button>
+      <h3 class="modal-title">Your wallet</h3>
+      <div class="wallet-addr-box">
+        <code id="walletFull">—</code>
+      </div>
+      <p class="rank-note">Connected for ranking registration only. Disconnecting never affects your funds.</p>
+      <div class="success-actions">
+        <button class="btn btn-ghost" id="btnDisconnect">Disconnect</button>
+        <button class="btn btn-primary" id="btnWalletClose">Close</button>
+      </div>
+    </div>
+  </div>
 
   <!-- ===================== REGISTER MODAL ===================== -->
   <div id="regModal" class="modal hidden" role="dialog" aria-modal="true">
@@ -249,6 +267,7 @@
 
   <!-- ===================== ABOUT ===================== -->
   <section class="about-section" id="sobre">
+    <img class="float-head fh-3" src="assets/head-pain.png" alt="">
     <div class="container about-inner">
       <h2 class="section-title">About the game</h2>
       <p>BULLFUN is a tribute to the classic first-person brawlers from the golden age

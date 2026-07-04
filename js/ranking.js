@@ -122,6 +122,20 @@
     } catch { return null; }
   }
 
+  const walletModal = document.getElementById('walletModal');
+  function openWalletModal() {
+    document.getElementById('walletFull').textContent = walletAddr || '—';
+    walletModal.classList.remove('hidden');
+  }
+  function closeWalletModal() { walletModal.classList.add('hidden'); }
+
+  async function disconnectWallet() {
+    try { await provider()?.disconnect(); } catch { /* alguns providers não suportam */ }
+    walletAddr = null;
+    updateWalletUI();
+    closeWalletModal();
+  }
+
   async function register() {
     if (busy || registered) return;
     const ph = provider();
@@ -186,15 +200,24 @@
     const btn = document.getElementById('btnRegister');
     btn.disabled = !lastWon;
     btn.textContent = lastWon ? '🏆 Register score' : 'Beat Ansem to register';
+    // vitória → abre o registro na hora (nome + wallet + registrar)
+    if (lastWon && lastScore > 0) setTimeout(openModal, 800);
   });
 
   document.getElementById('btnRegister').addEventListener('click', openModal);
   document.getElementById('btnRegister2').addEventListener('click', openModal);
   document.getElementById('modalClose').addEventListener('click', closeModal);
   modal.addEventListener('pointerdown', (e) => { if (e.target === modal) closeModal(); });
-  window.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+  window.addEventListener('keydown', (e) => { if (e.key === 'Escape') { closeModal(); closeWalletModal(); } });
   btnConnect.addEventListener('click', register);
-  btnWallet.addEventListener('click', () => connectWallet(true));
+  btnWallet.addEventListener('click', () => {
+    if (walletAddr) openWalletModal();
+    else connectWallet(true);
+  });
+  document.getElementById('btnDisconnect').addEventListener('click', disconnectWallet);
+  document.getElementById('btnWalletClose').addEventListener('click', closeWalletModal);
+  document.getElementById('walletModalClose').addEventListener('click', closeWalletModal);
+  walletModal.addEventListener('pointerdown', (e) => { if (e.target === walletModal) closeWalletModal(); });
   document.getElementById('btnCloseSuccess').addEventListener('click', closeModal);
   document.getElementById('btnViewRank').addEventListener('click', () => {
     closeModal();
